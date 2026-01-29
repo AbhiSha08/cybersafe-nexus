@@ -3,10 +3,9 @@ import {
   ShieldAlert, Globe, Database, Key, Terminal, Info, Clock, Zap, Activity, Loader2, ChevronDown, ChevronUp, Unlock, Lock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-// CORRECT PATH: Go up 2 levels (tools -> components -> src)
 import api from '../../api';
 
-// --- 1. PHISHING ANALYZER (Keep as is) ---
+// --- 1. PHISHING ANALYZER ---
 export const PhishingSimulator = ({ isDarkMode }) => {
   const [url, setUrl] = useState('');
   const [analysis, setAnalysis] = useState(null);
@@ -21,7 +20,8 @@ export const PhishingSimulator = ({ isDarkMode }) => {
     setShowTechDetails(false);
 
     try {
-      const response = await api.post('/tools/analyze-url', { url: url });
+      /** FIX: Added /api prefix for production routing */
+      const response = await api.post('/api/tools/analyze-url', { url: url });
       const result = response.data; 
       const safetyScore = Math.max(0, 100 - result.risk_score);
 
@@ -33,7 +33,8 @@ export const PhishingSimulator = ({ isDarkMode }) => {
       });
 
       try {
-        await api.post('/tools/log-simulation', {
+        /** FIX: Added /api prefix for SIEM logging */
+        await api.post('/api/tools/log-simulation', {
           tool_name: "Phishing Analyzer",
           input_data: result.target || url,
           risk_level: result.verdict === "SAFE" ? "Low" : "Critical",
@@ -48,7 +49,7 @@ export const PhishingSimulator = ({ isDarkMode }) => {
     }
   };
 
-  const theme = isDarkMode ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-200';
+  const theme = isDarkMode ? 'bg-slate-900/40 border-slate-800' : 'bg-white border-slate-200 shadow-xl';
 
   return (
     <div className="space-y-8">
@@ -70,19 +71,19 @@ export const PhishingSimulator = ({ isDarkMode }) => {
         {analysis && !analysis.error && (
           <motion.div key="result" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               <div className={`p-8 rounded-[2rem] border ${theme} flex flex-col items-center justify-center relative`}>
-                  <div className="text-5xl font-black tracking-tighter mb-2">{Math.round(analysis.score)}%</div>
-                  <p className="text-[10px] font-black uppercase tracking-widest opacity-50">Trust Score</p>
-               </div>
-               <div className={`p-8 rounded-[2rem] border ${theme} flex flex-col justify-center`}>
-                 <div className={`p-3 rounded-xl mb-3 text-center border font-black uppercase ${analysis.verdict === 'SAFE' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-red-500/10 border-red-500/20 text-red-500'}`}>
-                   {analysis.verdict}
-                 </div>
-                 <p className="text-xs opacity-70 text-center">Executive Summary: {analysis.verdict === 'SAFE' ? "Domain is trustworthy." : "Security risks detected."}</p>
-               </div>
+                <div className={`p-8 rounded-[2rem] border ${theme} flex flex-col items-center justify-center relative`}>
+                   <div className="text-5xl font-black tracking-tighter mb-2">{Math.round(analysis.score)}%</div>
+                   <p className="text-[10px] font-black uppercase tracking-widest opacity-50">Trust Score</p>
+                </div>
+                <div className={`p-8 rounded-[2rem] border ${theme} flex flex-col justify-center`}>
+                  <div className={`p-3 rounded-xl mb-3 text-center border font-black uppercase ${analysis.verdict === 'SAFE' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-red-500/10 border-red-500/20 text-red-500'}`}>
+                    {analysis.verdict}
+                  </div>
+                  <p className="text-xs opacity-70 text-center">Executive Summary: {analysis.verdict === 'SAFE' ? "Domain is trustworthy." : "Security risks detected."}</p>
+                </div>
             </div>
             <div className={`rounded-[2rem] border overflow-hidden ${theme}`}>
-              <button onClick={() => setShowTechDetails(!showTechDetails)} className="w-full flex justify-between p-6 hover:bg-slate-800/5">
+              <button onClick={() => setShowTechDetails(!showTechDetails)} className="w-full flex justify-between p-6 hover:bg-slate-800/5 transition-colors">
                 <span className="font-black text-xs uppercase tracking-widest flex gap-2"><Terminal size={16}/> Technical Audit</span>
                 {showTechDetails ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
               </button>
@@ -104,24 +105,21 @@ export const PhishingSimulator = ({ isDarkMode }) => {
   );
 };
 
-// --- 2. SQL INJECTION LAB (Updated Interactive) ---
+// --- 2. SQL INJECTION LAB ---
 export const SQLiLab = ({ isDarkMode }) => {
   const [query, setQuery] = useState({ user: '', pass: '' });
   const [dbResult, setDbResult] = useState([]);
   const [isBreached, setIsBreached] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // MOCK DATABASE
   const mockDB = [
     { id: 1, user: 'admin', pass: 'sUp3r_S3cr3t_K3y', role: 'root' },
     { id: 2, user: 'alice', pass: 'wonderland123', role: 'user' },
     { id: 3, user: 'bob', pass: 'builder2024', role: 'user' }
   ];
 
-  // Manual Execution Handler
   const handleExecute = () => {
     setLoading(true);
-    // Simulate network delay
     setTimeout(() => {
         const input = query.user;
         const tautologyPattern = /['"]\s+OR\s+['"]?(\w+)['"]?\s*=\s*['"]?\1['"]?/i;
@@ -130,24 +128,22 @@ export const SQLiLab = ({ isDarkMode }) => {
         let result = [];
         let breached = false;
         
-        // Check 1: Normal Login
         const validUser = mockDB.find(u => u.user === input);
         
-        // Check 2: Attack Vector
         if (tautologyPattern.test(input) || (input.includes("'") && commentPattern.test(input))) {
-            result = mockDB; // Dump all data
+            result = mockDB; 
             breached = true;
         } else if (validUser) {
-            result = [validUser]; // Return single user
+            result = [validUser];
         }
     
         setDbResult(result);
         setIsBreached(breached);
         setLoading(false);
     
-        // Only log if it was a successful breach
         if (breached) {
-             api.post('/tools/log-simulation', {
+             /** FIX: Added /api prefix for SIEM logging */
+             api.post('/api/tools/log-simulation', {
                 tool_name: "SQLi Playground",
                 input_data: input,
                 risk_level: "Critical",
@@ -165,7 +161,6 @@ export const SQLiLab = ({ isDarkMode }) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
-      {/* LEFT: ATTACK PANEL */}
       <div className={`p-8 rounded-[2.5rem] border flex flex-col justify-center ${isDarkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-white shadow-xl'}`}>
         <h3 className="font-black text-[10px] uppercase tracking-[0.2em] mb-8 flex items-center gap-2 opacity-50">
             <Terminal size={18} className="text-cyan-500"/> Authenticate
@@ -195,7 +190,6 @@ export const SQLiLab = ({ isDarkMode }) => {
            </div>
         </div>
 
-        {/* ACTION BUTTONS */}
         <div className="flex gap-4 mt-8">
             <button 
                 onClick={handleExecute}
@@ -222,7 +216,6 @@ export const SQLiLab = ({ isDarkMode }) => {
         </div>
       </div>
 
-      {/* RIGHT: DATABASE RESULT PANEL */}
       <div className={`p-8 rounded-[2.5rem] border relative overflow-hidden flex flex-col ${isBreached ? 'border-red-500/50 bg-red-950/10' : 'border-slate-800 bg-black'}`}>
         <div className="flex justify-between items-center mb-6 z-10">
           <span className="text-slate-500 uppercase tracking-widest text-[10px] font-black">// DATABASE_RESPONSE_NODE</span>
@@ -230,15 +223,15 @@ export const SQLiLab = ({ isDarkMode }) => {
         </div>
         <div className="flex-1 overflow-y-auto z-10 font-mono text-xs">
            <table className="w-full text-left border-collapse">
-              <thead>
+             <thead>
                  <tr className="text-slate-500 border-b border-slate-800">
                     <th className="py-2">ID</th>
                     <th className="py-2">USER</th>
                     <th className="py-2">ROLE</th>
                     <th className="py-2 text-right">PASSWORD_HASH</th>
                  </tr>
-              </thead>
-              <tbody>
+             </thead>
+             <tbody>
                  {dbResult.length > 0 ? (
                     dbResult.map((row) => (
                        <motion.tr 
@@ -254,7 +247,7 @@ export const SQLiLab = ({ isDarkMode }) => {
                  ) : (
                     <tr><td colSpan="4" className="py-10 text-center text-slate-700 italic">No records found or access denied.</td></tr>
                  )}
-              </tbody>
+             </tbody>
            </table>
         </div>
         {isBreached && <div className="absolute inset-0 bg-red-500/5 pointer-events-none z-0 animate-pulse"/>}
@@ -263,7 +256,7 @@ export const SQLiLab = ({ isDarkMode }) => {
   );
 };
 
-// --- 3. PASSWORD AUDITOR (Unchanged) ---
+// --- 3. PASSWORD AUDITOR ---
 export const PasswordAuditor = ({ isDarkMode }) => {
     const [pwd, setPwd] = useState('');
     const lastLogged = useRef('');
@@ -284,7 +277,8 @@ export const PasswordAuditor = ({ isDarkMode }) => {
     const handleLog = async () => {
       if (entropy < 10 || pwd === lastLogged.current) return;
       try {
-        await api.post('/tools/log-simulation', {
+        /** FIX: Added /api prefix for SIEM logging */
+        await api.post('/api/tools/log-simulation', {
           tool_name: "Password Auditor",
           input_data: "[REDACTED_NODE]",
           risk_level: entropy < 40 ? "Medium" : "Low",

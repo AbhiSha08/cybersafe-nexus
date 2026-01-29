@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { RefreshCw, Activity, Filter, Search } from 'lucide-react';
-// CORRECT PATH: Go up 2 levels
 import api from '../../api';
 
 export default function SecurityLogs({ isDarkMode }) {
@@ -13,7 +12,8 @@ export default function SecurityLogs({ isDarkMode }) {
   const fetchLogs = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/tools/security-logs');
+      /** FIX: Added /api prefix to match FastAPI router prefix in main.py */
+      const res = await api.get('/api/tools/security-logs');
       setLogs(res.data);
     } catch (err) {
       console.error("SIEM Extraction Failure");
@@ -57,7 +57,7 @@ export default function SecurityLogs({ isDarkMode }) {
           </h3>
           <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mt-1">Real-time Session Monitoring</p>
         </div>
-        <button onClick={fetchLogs} className="self-end p-3 rounded-xl bg-slate-800/10 border border-slate-800/20 text-cyan-500 hover:scale-105 transition-all">
+        <button onClick={fetchLogs} className="self-end p-3 rounded-xl bg-slate-800/10 border border-slate-800/20 text-cyan-500 hover:scale-105 transition-all transition-colors">
           <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
         </button>
       </div>

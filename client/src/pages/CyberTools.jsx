@@ -18,9 +18,11 @@ export default function CyberTools({ isDarkMode }) {
   useEffect(() => {
     const fetchAlerts = async () => {
       try {
-        /** * Path update to match main.py prefix: /api/tools
+        /** * FIX: Corrected syntax for endpoint and cache-buster.
+         * Path matches FastAPI: /api/tools/live-alerts
          */
-        const res = await api.get('/api/tools/live-alerts')+ Date.now());
+        const res = await api.get(`/api/tools/live-alerts?v=${Date.now()}`);
+        
         if (res.data && res.data.length > 0) {
           setAlerts([
               "Authorized research protocols apply. Unauthorized use strictly prohibited.",

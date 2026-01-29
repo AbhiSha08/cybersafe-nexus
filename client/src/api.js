@@ -1,11 +1,10 @@
 import axios from 'axios';
 
 /**
- * Standardized Base URL for Mumbai University Project
- * Uses VITE_API_URL from .env or Vercel Settings
- * Fallback to localhost only for local development
+ * Hard-coded URL for Mumbai University Project Deployment
+ * This ensures the frontend connects to the cloud backend directly.
  */
-const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const BASE_URL = 'https://cybersafe-nexus.onrender.com'; 
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -27,38 +26,21 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response Interceptor: Handles 401 Session Expiration and Silent Route preservation
+// Response Interceptor: Handles 401 Session Expiration
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     const originalRequest = error.config;
-
-    // --- CRITICAL FIX: SILENT ROUTES ---
-    // Prevent SIEM logging or background AI failures from wiping the UI state 
-    // or triggering global error redirects.
-    const SILENT_ROUTES = [
-      '/ai-assistant', 
-      '/live-alerts', 
-      '/tools/log-simulation', 
-      '/tools/security-logs'
-    ];
+    const SILENT_ROUTES = ['/ai-assistant', '/live-alerts', '/tools/log-simulation', '/tools/security-logs'];
     
     if (originalRequest && SILENT_ROUTES.some(route => originalRequest.url.includes(route))) {
-      console.warn(`Silent background error handled for: ${originalRequest.url}`);
       return Promise.reject(error);
     }
 
-    // Handle 401 Unauthorized for MAIN requests
     if (error.response?.status === 401) {
-      const authPages = ['/login', '/register', '/forgot-password'];
-      const isAuthPage = authPages.some(path => window.location.pathname.includes(path));
-
-      if (!isAuthPage) {
-        console.warn("Session Expired. Redirecting to login node.");
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = '/login?expired=true';
-      }
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login?expired=true';
     }
     return Promise.reject(error);
   }

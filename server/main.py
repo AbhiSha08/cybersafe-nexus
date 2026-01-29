@@ -57,19 +57,17 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 # --- CORS (Allow Frontend Access) ---
 # Add your production frontend URL here once deployed to Vercel
+# --- CORS (Allow Frontend Access) ---
 origins = [
     "http://localhost:3000",
     "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    # 1. Your main Vercel project domain (Add your primary one here)
-    "https://cybersafe-nexus.vercel.app", 
-    # 2. Wildcard for your specific project subdomains (Recommended)
-    "https://cybersafe-nexus-*.vercel.app"  # Placeholder for your production URL
+    "https://cybersafe-nexus.onrender.com",
+    "https://cybersafe-nexus.vercel.app",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"], # TEMPORARY: Allow all for testing, then restrict later
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -20,7 +20,7 @@ export default function CyberTools({ isDarkMode }) {
       try {
         /** * Path update to match main.py prefix: /api/tools
          */
-        const res = await api.get('/api/tools/live-alerts');
+        const res = await api.get('/api/tools/live-alerts')+ Date.now());
         if (res.data && res.data.length > 0) {
           setAlerts([
               "Authorized research protocols apply. Unauthorized use strictly prohibited.",

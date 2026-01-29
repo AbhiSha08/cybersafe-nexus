@@ -89,7 +89,9 @@ app.include_router(tools.router, prefix="/api/tools", tags=["Cyber Tools"])
 # 5. Admin / Root Console
 app.include_router(admin.router, prefix="/admin", tags=["Root Console"])
 
-@app.get("/")
+# --- ROOT ENDPOINT (UPDATED FOR RENDER HEALTH CHECKS) ---
+# Explicitly allowing 'HEAD' method fixes the 405 error on deployment
+@app.api_route("/", methods=["GET", "HEAD"])
 async def root():
     return {
         "system": "CyberSafe Nexus", 

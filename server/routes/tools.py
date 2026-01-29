@@ -14,12 +14,13 @@ from urllib.parse import urlparse
 from dateutil import parser 
 from bson import ObjectId 
 
-router = APIRouter()
+# FIX: Added internal prefix to resolve modular routing trap
+router = APIRouter(prefix="/tools")
 
 # --- AI CONFIG ---
 if settings.GEMINI_API_KEY:
     genai.configure(api_key=settings.GEMINI_API_KEY)
-    # Locked to 2.5 Flash as requested
+    # KEPT: Using your specified Gemini 2.5 Flash model
     model = genai.GenerativeModel("gemini-2.5-flash") 
 
 class SimulationLog(BaseModel):
@@ -46,7 +47,6 @@ async def chat_with_ai(msg_data: ChatMessage):
     if not settings.GEMINI_API_KEY: 
         return {"response": "System: AI Offline (Missing API Key)."}
     try:
-        # Prompt engineering for cybersecurity context
         system_instruction = "You are Nexus AI, a cybersecurity expert for students. Keep answers concise and educational."
         response = model.generate_content(f"{system_instruction}\nUser: {msg_data.message}")
         return {"response": response.text}
@@ -54,7 +54,7 @@ async def chat_with_ai(msg_data: ChatMessage):
         print(f"AI Error: {e}")
         return {"response": "System: Neural Link Unstable (Connection Failure)."}
 
-# --- REAL-TIME PHISHING ANALYZER (OWASP STANDARD) ---
+# --- REAL-TIME PHISHING ANALYZER ---
 @router.post("/analyze-url")
 async def analyze_target_url(data: dict, user=Depends(get_current_user)):
     raw_url = data.get("url", "").strip()
@@ -96,14 +96,12 @@ async def analyze_target_url(data: dict, user=Depends(get_current_user)):
         w = whois.whois(domain)
         c_date = w.creation_date
         
-        # Handle list vs string return types
         if isinstance(c_date, list): c_date = c_date[0]
         if isinstance(c_date, str):
             try: c_date = parser.parse(c_date)
             except: c_date = None
 
         if c_date and isinstance(c_date, datetime):
-            # Timezone awareness fix
             if c_date.tzinfo is None:
                 days = (datetime.now() - c_date).days
             else:
@@ -142,7 +140,6 @@ async def analyze_target_url(data: dict, user=Depends(get_current_user)):
 async def log_security_event(data: SimulationLog, user=Depends(get_current_user)):
     user_id = str(user.get('user_id') or user.get('id'))
     
-    # 1. Log the event to MongoDB
     doc = {
         "user_id": user_id,
         "tool": data.tool_name,
@@ -153,7 +150,6 @@ async def log_security_event(data: SimulationLog, user=Depends(get_current_user)
     }
     await db.security_logs.insert_one(doc)
 
-    # 2. Update User Score (Gamification)
     points = 0
     if data.risk_level == "Critical": points = 50
     elif data.risk_level == "High": points = 30

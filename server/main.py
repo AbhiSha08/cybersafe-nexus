@@ -61,7 +61,10 @@ origins = [
     "http://localhost:3000",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://cybersafe-nexus.vercel.app"  # Placeholder for your production URL
+    # 1. Your main Vercel project domain (Add your primary one here)
+    "https://cybersafe-nexus.vercel.app", 
+    # 2. Wildcard for your specific project subdomains (Recommended)
+    "https://cybersafe-nexus-*.vercel.app"  # Placeholder for your production URL
 ]
 
 app.add_middleware(

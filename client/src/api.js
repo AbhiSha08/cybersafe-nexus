@@ -2,8 +2,10 @@ import axios from 'axios';
 
 /**
  * Standardized Base URL for Mumbai University Project
+ * Uses VITE_API_URL from .env or Vercel Settings
+ * Fallback to localhost only for local development
  */
-const BASE_URL = 'http://127.0.0.1:8000';
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const api = axios.create({
   baseURL: BASE_URL,

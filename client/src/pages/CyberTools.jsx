@@ -18,16 +18,17 @@ export default function CyberTools({ isDarkMode }) {
   useEffect(() => {
     const fetchAlerts = async () => {
       try {
-        // FIX: Changed from '/live-alerts' to '/tools/live-alerts' to match backend prefix
-        const res = await api.get('/tools/live-alerts');
+        /** * Path update to match main.py prefix: /api/tools
+         */
+        const res = await api.get('/api/tools/live-alerts');
         if (res.data && res.data.length > 0) {
           setAlerts([
-             "Authorized research protocols apply. Unauthorized use strictly prohibited.",
-             ...res.data
+              "Authorized research protocols apply. Unauthorized use strictly prohibited.",
+              ...res.data
           ]);
         }
       } catch (err) {
-        console.warn("Live Intel Offline");
+        console.warn("Live Intel Offline: Using local fallback alerts.");
       }
     };
     fetchAlerts();
@@ -113,7 +114,7 @@ export default function CyberTools({ isDarkMode }) {
   return (
     <div className="max-w-[1400px] mx-auto px-4 py-8 font-sans min-h-screen overflow-x-hidden">
       
-      {/* ETHICAL DIRECTIVE SECTION */}
+      {/* ETHICAL DIRECTIVE SECTION (Glitch Effect Preserved) */}
       <motion.section 
         initial="hidden" animate="visible" variants={glitchVariant}
         className={`mb-10 p-8 rounded-[2.5rem] border-2 border-red-500/30 ${isDarkMode ? 'bg-red-500/5' : 'bg-red-50'} relative overflow-hidden`}
@@ -143,6 +144,7 @@ export default function CyberTools({ isDarkMode }) {
         </div>
       </motion.section>
 
+      {/* Header with Animation Preserved */}
       <motion.header initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-10 flex items-center gap-6">
         <div className={`p-4 rounded-2xl ${isDarkMode ? 'bg-cyan-500/10 border border-cyan-500/20' : 'bg-cyan-50 border-cyan-100'}`}>
           <ShieldAlert className="text-cyan-500" size={36} />
@@ -156,6 +158,7 @@ export default function CyberTools({ isDarkMode }) {
       </motion.header>
 
       <div className="flex flex-col lg:flex-row gap-8">
+        {/* Sidebar with Button Transitions Preserved */}
         <aside className={`lg:w-1/4 h-fit p-6 rounded-[2.5rem] border ${theme.sidebar}`}>
           <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-6 px-2">Operational Modules</p>
           <div className="space-y-3">
@@ -178,6 +181,7 @@ export default function CyberTools({ isDarkMode }) {
           </div>
         </aside>
 
+        {/* Main Content Area with Scale/Opacity Transitions Preserved */}
         <main className="lg:w-3/4">
           <AnimatePresence mode="wait">
             <motion.div

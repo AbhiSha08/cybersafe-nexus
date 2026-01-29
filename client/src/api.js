@@ -5,7 +5,7 @@ import axios from 'axios';
  * Uses VITE_API_URL from .env or Vercel Settings
  * Fallback to localhost only for local development
  */
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 const api = axios.create({
   baseURL: BASE_URL,

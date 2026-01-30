@@ -1,31 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { 
-  Sun, Moon, LogOut, Menu, X, 
-  Terminal, Newspaper, Settings, Home, BarChart3, Search, Globe, ExternalLink, History
+  Sun, Moon, LogOut, 
+  Terminal, Newspaper, Settings, Home, BarChart3, Search, Globe, ExternalLink, History, X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import NexusLogo from './NexusLogo';
 
 export default function Navbar({ isDarkMode, toggleTheme }) {
   const navigate = useNavigate();
-  const location = useLocation();
   const searchRef = useRef(null);
   
-  // --- MOBILE DETECTION LOGIC (INTEGRATED) ---
+  // Mobile detection
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  // Close menu on route change
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location.pathname]);
 
   // Search State
   const [searchQuery, setSearchQuery] = useState('');
@@ -102,7 +94,8 @@ export default function Navbar({ isDarkMode, toggleTheme }) {
     active: isDarkMode ? 'bg-slate-800 text-cyan-400 border-cyan-500/30' : 'bg-gray-100 text-teal-600 border-teal-200',
     searchBg: isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900',
     dropdown: isDarkMode ? 'bg-slate-900 border-slate-700 shadow-cyan-900/20' : 'bg-white border-slate-200 shadow-xl',
-    mobileMenu: isDarkMode ? 'bg-slate-950/95 border-r border-slate-800' : 'bg-white/95 border-r border-gray-200',
+    mobileIconActive: 'text-cyan-500 bg-cyan-500/10',
+    mobileIconInactive: isDarkMode ? 'text-slate-500' : 'text-slate-400'
   };
 
   const glitchExit = {
@@ -112,30 +105,44 @@ export default function Navbar({ isDarkMode, toggleTheme }) {
   };
 
   return (
-    <>
-      <nav className={`sticky top-0 z-50 border-b backdrop-blur-md w-full overflow-visible ${theme.nav}`}>
-        {/* --- CYBER GRID BACKGROUND --- */}
-        <div className={`absolute inset-0 z-0 pointer-events-none opacity-20`}>
+    <nav className={`sticky top-0 z-50 border-b backdrop-blur-md w-full overflow-visible transition-colors ${theme.nav}`}>
+       {/* --- CYBER GRID BACKGROUND --- */}
+       <div className={`absolute inset-0 z-0 pointer-events-none opacity-20`}>
            <div className={`absolute inset-0 cyber-grid ${!isDarkMode ? 'light-mode' : ''}`}></div>
-        </div>
+       </div>
 
-        <div className="max-w-[1600px] mx-auto px-4 lg:px-6 relative z-10">
-          <div className="flex h-16 items-center justify-between gap-4">
-            
-            {/* BRAND */}
-            <div className="flex items-center gap-3 cursor-pointer shrink-0 group" onClick={() => navigate('/')}>
-              <span className={`hidden lg:block text-xs font-black uppercase tracking-[0.2em] transition-colors ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
-                CyberSafe
-              </span>
-              <NexusLogo className="w-8 h-8 md:w-9 md:h-9 group-hover:scale-110 transition-transform duration-300" />
-              <span className={`text-xl md:text-2xl font-black tracking-tighter leading-none ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                NEXUS
-              </span>
-            </div>
+       <div className="max-w-[1600px] mx-auto px-4 lg:px-6 relative z-10">
+         
+         {/* --- TOP ROW: BRAND & CONTROLS --- */}
+         <div className="flex h-16 items-center justify-between gap-4">
+           
+           {/* BRAND */}
+           <div className="flex items-center gap-3 cursor-pointer shrink-0 group" onClick={() => navigate('/')}>
+             <NexusLogo className="w-8 h-8 md:w-9 md:h-9 group-hover:scale-110 transition-transform duration-300" />
+             <span className={`text-xl md:text-2xl font-black tracking-tighter leading-none ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+               NEXUS
+             </span>
+           </div>
 
-            {/* SEARCH BAR (Desktop Only) */}
-            {!isMobile && (
-              <div className="hidden md:flex flex-1 max-w-sm relative" ref={searchRef}>
+           {/* DESKTOP NAV (Hidden on Mobile) */}
+           {!isMobile && (
+             <div className="flex items-center gap-x-1">
+               {navLinks.map((link) => (
+                 <NavLink
+                   key={link.path}
+                   to={link.path}
+                   className={({ isActive }) => `flex items-center gap-2 px-3 py-1.5 rounded-xl text-[13px] font-bold uppercase tracking-wider transition-all border border-transparent ${isActive ? theme.active : theme.text}`}
+                 >
+                   <link.icon size={16} />
+                   <span>{link.label}</span>
+                 </NavLink>
+               ))}
+             </div>
+           )}
+
+           {/* SEARCH BAR (Desktop Only) */}
+           {!isMobile && (
+             <div className="flex-1 max-w-sm relative" ref={searchRef}>
                  <form onSubmit={(e) => { e.preventDefault(); performSearch(searchQuery); }} className="w-full">
                   <div className={`relative flex items-center w-full rounded-2xl border px-4 py-1.5 transition-all overflow-hidden ${theme.searchBg} ${isSearching ? 'border-cyan-500/50' : ''}`}>
                     {isSearching && (
@@ -162,7 +169,8 @@ export default function Navbar({ isDarkMode, toggleTheme }) {
                     )}
                   </div>
                 </form>
-                {/* Search History & Results Logic (Preserved) */}
+                {/* Search Logic (Hidden on mobile here, moved below) */}
+                {/* ... (Same search result dropdown code as desktop) ... */}
                 <AnimatePresence>
                   {showHistory && history.length > 0 && !searchResults && !isSearching && (
                     <motion.div initial="initial" animate="animate" exit="exit" variants={glitchExit} className={`absolute top-12 left-0 right-0 p-2 rounded-2xl border shadow-2xl z-[100] ${theme.dropdown}`}>
@@ -195,121 +203,90 @@ export default function Navbar({ isDarkMode, toggleTheme }) {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
-            )}
+             </div>
+           )}
 
-            {/* DESKTOP TABS */}
-            {!isMobile && (
-              <div className="flex items-center gap-x-1">
-                {navLinks.map((link) => (
-                  <NavLink
-                    key={link.path}
-                    to={link.path}
-                    className={({ isActive }) => `flex items-center gap-2 px-3 py-1.5 rounded-xl text-[13px] font-bold uppercase tracking-wider transition-all border border-transparent ${isActive ? theme.active : theme.text}`}
-                  >
-                    <link.icon size={16} />
-                    <span>{link.label}</span>
-                  </NavLink>
-                ))}
-              </div>
-            )}
+           {/* CONTROLS */}
+           <div className="flex items-center gap-2 sm:gap-3 shrink-0 pl-4 border-l border-slate-800/20">
+             {/* Profile (Always Visible) */}
+             {isLoggedIn ? (
+               <div onClick={() => navigate('/profile')} className="flex items-center gap-2 cursor-pointer group">
+                 <div className={`w-8 h-8 rounded-xl flex items-center justify-center border transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'} group-hover:border-cyan-500`}>
+                    <span className="font-black text-xs text-cyan-500">{user?.name?.[0] || 'U'}</span>
+                 </div>
+               </div>
+             ) : (
+                <button onClick={() => navigate('/login')} className="px-4 py-2 bg-cyan-600 rounded-xl text-white text-xs font-bold uppercase">Login</button>
+             )}
 
-            {/* CONTROLS */}
-            <div className="flex items-center gap-2 sm:gap-3 shrink-0 border-l border-slate-800/20 pl-4">
-              {/* Profile (Desktop) */}
-              {!isMobile && isLoggedIn && (
-                <div onClick={() => navigate('/profile')} className="flex flex-col items-end cursor-pointer group">
-                  <span className={`text-sm font-black uppercase tracking-tight group-hover:text-cyan-500 transition-colors ${isDarkMode ? 'text-slate-100' : 'text-gray-900'}`}>
-                    {user?.name?.split(' ')[0] || 'Operative'}
-                  </span>
-                  <span className="text-[10px] font-bold text-cyan-500 uppercase tracking-widest">{user?.role || 'User'}</span>
-                </div>
-              )}
+             {/* Theme Toggle */}
+             <button onClick={toggleTheme} className={`p-2 rounded-xl hover:bg-slate-500/10 ${theme.text}`}>
+               {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+             </button>
 
-              {/* Theme Toggle */}
-              <button onClick={toggleTheme} className={`p-2 rounded-xl hover:bg-slate-500/10 ${theme.text}`}>
-                {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-              </button>
+             {/* Logout (Icon Only) */}
+             {isLoggedIn && (
+               <button onClick={handleLogout} className="p-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-600 hover:text-white transition-all"><LogOut size={18} /></button>
+             )}
+           </div>
+         </div>
 
-              {/* HAMBURGER TRIGGER (Mobile Only) */}
-              {isMobile && (
-                <button 
-                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
-                  className={`p-2 rounded-xl transition-all ${isMobileMenuOpen ? 'bg-cyan-500 text-white' : theme.text}`}
-                >
-                  {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-                </button>
-              )}
+         {/* --- ROW 2: MOBILE NAVIGATION ICONS --- */}
+         {isMobile && (
+           <div className="pb-3 border-t border-slate-800/20 pt-3">
+             <div className="flex justify-between items-center px-1">
+               {navLinks.map((link) => (
+                 <NavLink
+                   key={link.path}
+                   to={link.path}
+                   className={({ isActive }) => `flex flex-col items-center justify-center p-2 rounded-xl transition-all ${isActive ? theme.mobileIconActive : theme.mobileIconInactive}`}
+                 >
+                   <link.icon size={20} />
+                   {/* Optional labels below icons if needed, keeping mostly clean for now */}
+                 </NavLink>
+               ))}
+             </div>
+           </div>
+         )}
 
-              {/* Desktop Logout */}
-              {!isMobile && isLoggedIn && (
-                <button onClick={handleLogout} className="p-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-600 hover:text-white transition-all"><LogOut size={18} /></button>
-              )}
+         {/* --- ROW 3: MOBILE SEARCH BAR --- */}
+         {isMobile && (
+            <div className="pb-3 px-1 relative" ref={searchRef}>
+                <form onSubmit={(e) => { e.preventDefault(); performSearch(searchQuery); }} className="w-full">
+                  <div className={`relative flex items-center w-full rounded-xl border px-3 py-2 transition-all ${theme.searchBg}`}>
+                    <Search size={16} className="text-slate-500 mr-2" />
+                    <input 
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search Intel..."
+                      className="bg-transparent border-none outline-none text-xs w-full font-medium placeholder-slate-500"
+                    />
+                    {searchQuery && (
+                      <button type="button" onClick={() => { setSearchQuery(''); setSearchResults(null); }} className="text-slate-500">
+                        <X size={14} />
+                      </button>
+                    )}
+                  </div>
+                </form>
+                
+                {/* Mobile Search Results Dropdown */}
+                <AnimatePresence>
+                  {searchResults && searchResults.length > 0 && (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={`absolute top-full left-0 right-0 mt-2 p-3 rounded-xl border shadow-2xl z-[100] ${theme.dropdown}`}>
+                       {searchResults.map((result, idx) => (
+                         <a key={idx} href={`https://en.wikipedia.org/?curid=${result.pageid}`} target="_blank" rel="noreferrer" className="block w-full text-left px-3 py-2.5 rounded-lg mb-1 last:mb-0 border border-transparent hover:border-slate-700 bg-slate-800/50">
+                            <p className="text-xs font-bold text-cyan-400">{result.title}</p>
+                            <p className="text-[10px] mt-0.5 text-slate-400 line-clamp-1">{result.snippet.replace(/<[^>]*>?/gm, '')}</p>
+                         </a>
+                       ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
             </div>
-          </div>
-        </div>
-      </nav>
+         )}
 
-      {/* --- MOBILE DRAWER --- */}
-      <AnimatePresence>
-        {isMobile && isMobileMenuOpen && (
-          <>
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className={`fixed top-0 bottom-0 right-0 z-50 w-[280px] shadow-2xl flex flex-col ${theme.mobileMenu}`}
-            >
-              <div className="p-6 border-b border-slate-800/20">
-                <div className="flex items-center gap-3 mb-6">
-                   <NexusLogo className="w-8 h-8" />
-                   <span className={`text-xl font-black tracking-tighter ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>NEXUS</span>
-                </div>
-                {/* Mobile Profile */}
-                {isLoggedIn && (
-                   <div onClick={() => navigate('/profile')} className="p-4 rounded-2xl bg-slate-500/5 border border-slate-500/10 flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-500 font-bold">
-                        {user?.name?.[0] || 'U'}
-                      </div>
-                      <div>
-                        <p className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{user?.name?.split(' ')[0]}</p>
-                        <p className="text-[10px] text-cyan-500 uppercase tracking-widest">{user?.role}</p>
-                      </div>
-                   </div>
-                )}
-              </div>
-
-              <div className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-                {navLinks.map((link) => (
-                  <NavLink
-                    key={link.path}
-                    to={link.path}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={({ isActive }) => `flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-bold uppercase tracking-wider transition-all ${isActive ? theme.active : `${theme.text} opacity-70 hover:opacity-100 hover:bg-slate-500/5`}`}
-                  >
-                    <link.icon size={18} />
-                    {link.label}
-                  </NavLink>
-                ))}
-              </div>
-
-              <div className="p-4 border-t border-slate-800/20">
-                 {isLoggedIn ? (
-                   <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-red-500/10 text-red-500 font-bold uppercase text-xs hover:bg-red-500 hover:text-white transition-all">
-                     <LogOut size={16} /> Terminate Session
-                   </button>
-                 ) : (
-                   <NavLink to="/login" onClick={() => setIsMobileMenuOpen(false)} className="block w-full text-center p-3 rounded-xl bg-cyan-600 text-white font-bold uppercase text-xs">Initialize Login</NavLink>
-                 )}
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </>
+       </div>
+    </nav>
   );
 }

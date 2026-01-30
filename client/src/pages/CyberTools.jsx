@@ -82,10 +82,9 @@ export default function CyberTools({ isDarkMode }) {
   const activeToolData = tools.find(t => t.id === activeTool);
 
   return (
-    // FIX: Added overflow-x-hidden and removed fixed max-w constraint for full mobile width
     <div className="w-full max-w-[1400px] mx-auto px-4 py-8 font-sans min-h-screen overflow-x-hidden">
       
-      {/* ETHICAL DIRECTIVE (Fluid Typography & Flex Wrap) */}
+      {/* ETHICAL DIRECTIVE (Fixed Typography Size) */}
       <motion.section 
         initial="hidden" animate="visible" variants={glitchVariant}
         className={`mb-10 p-6 rounded-[2rem] border-2 border-red-500/30 ${isDarkMode ? 'bg-red-500/5' : 'bg-red-50'} relative overflow-hidden`}
@@ -93,8 +92,8 @@ export default function CyberTools({ isDarkMode }) {
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-6">
           <div className="flex items-center gap-4 shrink-0">
             <AlertTriangle className="text-red-500 animate-pulse" size={44} />
-            <h1 className={`font-black uppercase tracking-tighter leading-none ${theme.text}`}>
-              Ethical <span className="text-red-500">Directive</span>
+            <h1 className={`font-black uppercase tracking-tighter leading-none ${theme.text} text-xl md:text-3xl`}>
+              Ethical <span className="text-red-500 text-3xl md:text-5xl block md:inline mt-1 md:mt-0">DIRECTIVE</span>
             </h1>
           </div>
           <div className="hidden md:block w-px h-14 bg-red-500/20" />
@@ -121,7 +120,7 @@ export default function CyberTools({ isDarkMode }) {
           <ShieldAlert className="text-cyan-500" size={36} />
         </div>
         <div>
-          <h1 className={`font-black tracking-tighter leading-none ${theme.text}`}>Cyber Tools Terminal</h1>
+          <h1 className={`text-3xl md:text-4xl font-black tracking-tighter leading-none ${theme.text}`}>Cyber Tools Terminal</h1>
           <p className={`${theme.subText} font-black uppercase tracking-[0.3em] text-[10px] mt-1`}>
             Vulnerability Research Node // Active_Session: 2026
           </p>
@@ -165,7 +164,7 @@ export default function CyberTools({ isDarkMode }) {
               className={`p-6 md:p-10 rounded-[2.5rem] border min-h-[600px] ${theme.card}`}
             >
               <div className="mb-8 pb-6 border-b border-slate-800/20">
-                <h2 className={`font-black tracking-tighter mb-2 ${theme.text}`}>
+                <h2 className={`text-2xl md:text-3xl font-black tracking-tighter mb-2 ${theme.text}`}>
                   {activeToolData.name}
                 </h2>
                 <p className={`${theme.subText} text-sm font-medium italic opacity-70`}>

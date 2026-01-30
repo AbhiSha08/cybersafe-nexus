@@ -76,7 +76,6 @@ export default function Home({ isDarkMode }) {
   };
 
   return (
-    // FIX: Removed fixed width constraint, added overflow-x-hidden for mobile safety
     <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 font-sans overflow-x-hidden">
       
       {/* 1. HERO SECTION */}
@@ -86,20 +85,21 @@ export default function Home({ isDarkMode }) {
         transition={{ duration: 0.8 }}
         className="text-center mb-20 md:mb-24 px-2"
       >
-        {/* FIX: Using Fluid Typography (text-5xl sm:text-8xl handles clamp automatically via Tailwind config or manual overrides) */}
-        <h1 className={`text-5xl sm:text-7xl lg:text-8xl font-black mb-6 md:mb-8 tracking-tighter leading-none ${theme.heading}`}>
-            CyberSafe <span className="relative inline-block">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">Nexus</span>
+        <h1 className={`flex flex-col md:block items-center justify-center font-black mb-6 md:mb-8 tracking-tighter leading-none ${theme.heading}`}>
+            <span className="text-3xl sm:text-5xl md:text-6xl tracking-[0.2em] md:tracking-normal mb-2 md:mb-0 md:mr-4">CYBERSAFE</span>
+            <span className="relative inline-block">
+              {/* FIX: Massive NEXUS text */}
+              <span className="text-6xl sm:text-8xl md:text-9xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">NEXUS</span>
               <motion.span 
                 animate={{ opacity: [0, 1, 0], x: [2, -2, 2] }}
                 transition={{ repeat: Infinity, duration: 0.1, repeatDelay: 4 }}
                 className="absolute inset-0 text-cyan-400 opacity-50 blur-[2px] hidden sm:block"
                 style={{ clipPath: 'inset(10% 0 10% 0)' }}
               >
-                Nexus
+                NEXUS
               </motion.span>
             </span>
-          </h1>
+        </h1>
 
         <p className={`text-base sm:text-xl md:text-2xl max-w-3xl mx-auto mb-10 md:mb-12 font-medium leading-relaxed ${theme.text}`}>
           <span className="opacity-50 font-mono text-cyan-500 mr-2 block sm:inline">[SYSTEM_READY]</span>
@@ -193,7 +193,7 @@ export default function Home({ isDarkMode }) {
           </div>
         </div>
 
-        {/* --- CAROUSEL CONTAINER (Responsive Height & Width) --- */}
+        {/* --- CAROUSEL CONTAINER --- */}
         <motion.div 
             className="relative h-[400px] md:h-[450px] w-full mx-auto flex items-center justify-center perspective-1000 cursor-grab active:cursor-grabbing overflow-hidden md:overflow-visible"
             onWheel={handleWheel}
@@ -207,7 +207,6 @@ export default function Home({ isDarkMode }) {
               return (
                 <motion.div
                   key={item.id}
-                  // FIX: Width 90% on Mobile, Fixed 600px on Desktop
                   className={`absolute w-[90%] md:w-[600px] h-[350px] md:h-[400px] p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] border backdrop-blur-md ${theme.cardBg} flex flex-col justify-between shadow-2xl transition-shadow duration-300`}
                   animate={style}
                   transition={{ duration: 0.6, ease: "easeInOut" }}

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Body, status
-from core.security import get_current_user, verify_password # Ensure verify_password is exported from security.py
+from core.security import get_current_user, verify_password
 from core.database import db
 from models.schemas import UserProfileResponse, User, LessonProgress, UserUpdate
 from datetime import datetime, timezone
@@ -38,6 +38,7 @@ async def get_my_profile(user_payload=Depends(get_current_user)):
 
     if last_login_str:
         try:
+            # Handle ISO format parsing
             if isinstance(last_login_str, str):
                 last_login = datetime.fromisoformat(last_login_str.replace('Z', '+00:00'))
             else:
@@ -48,10 +49,11 @@ async def get_my_profile(user_payload=Depends(get_current_user)):
             if delta == 1: 
                 streak += 1
             elif delta > 1: 
-                streak = 1 # Reset if skipped a day
+                streak = 1 # Reset streak
         except Exception:
             pass 
 
+    # Update streak/login in background
     await db.users.update_one(
         {'id': user_id},
         {'$set': {'streak_count': streak, 'last_login': now.isoformat()}}
@@ -89,6 +91,7 @@ async def get_my_profile(user_payload=Depends(get_current_user)):
     
     unique_certs = list(dict.fromkeys(certs))
     
+    # Calculate Profile Completeness
     fields = ['organization', 'gender', 'profile_picture']
     completeness = int((sum(1 for f in fields if user_doc.get(f)) / len(fields)) * 100)
 
@@ -131,7 +134,6 @@ async def update_profile(update_data: UserUpdate, user_payload=Depends(get_curre
         raise HTTPException(status_code=404, detail="User node lost.")
 
     # 2. Verify Password (SECURITY CHECK)
-    # The frontend forces password entry to save changes
     if not update_data.password:
         raise HTTPException(status_code=400, detail="Password required to authorize changes.")
         
@@ -139,14 +141,14 @@ async def update_profile(update_data: UserUpdate, user_payload=Depends(get_curre
         raise HTTPException(status_code=403, detail="Access Denied: Invalid Password.")
 
     # 3. Prepare Update Dict
-    # Exclude password from the update payload itself (we don't update password here)
+    # Exclude password so it isn't overwritten by the plain text verification password
     update_dict = {k: v for k, v in update_data.model_dump().items() if v is not None and k != 'password'}
 
     # 4. Check Email Uniqueness (if email is changing)
     if 'email' in update_dict and update_dict['email'] != current_user['email']:
         existing = await db.users.find_one({'email': update_dict['email']})
         if existing:
-            raise HTTPException(status_code=400, detail="Email address already registered to another operative.")
+            raise HTTPException(status_code=400, detail="Email address already registered.")
 
     if not update_dict:
         raise HTTPException(status_code=400, detail="No valid intel provided for update.")

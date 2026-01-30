@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from core.config import settings
 from core.database import db
+# Ensure you have 'admin.py' inside your 'routes' folder
 from routes import auth, lessons, tools, users, admin
 import logging
 import os
@@ -22,13 +23,13 @@ logger = logging.getLogger("Nexus-Core")
 async def lifespan(app: FastAPI):
     logger.info("⚡ SYSTEM INITIALIZATION PROTOCOL STARTED...")
     try:
+        # Check Database Connection
         await db.command("ping")
         logger.info("✅ MongoDB Atlas: CONNECTED")
     except Exception as e:
         logger.error(f"❌ MongoDB Atlas: FAILED - {e}")
 
     if settings.GEMINI_API_KEY:
-        # UPDATED: Matches your model selection
         logger.info("✅ Nexus AI Engine: ONLINE (Gemini 2.5 Flash Ready)")
     else:
         logger.warning("⚠️ Nexus AI Engine: OFFLINE (API Key Missing)")
@@ -65,9 +66,10 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(users.router, prefix="/api/users", tags=["User Intelligence"])
 app.include_router(lessons.router, prefix="/api/lessons", tags=["Curriculum Engine"])
-# FIX: Adjusted prefix to work with modular tools.router prefix
-app.include_router(tools.router, prefix="/api", tags=["Cyber Tools"])
-app.include_router(admin.router, prefix="/admin", tags=["Root Console"])
+app.include_router(tools.router, prefix="/api/tools", tags=["Cyber Tools"])
+
+# FIX: Changed prefix to '/api/admin' to match Frontend requests
+app.include_router(admin.router, prefix="/api/admin", tags=["Root Console"])
 
 @app.api_route("/", methods=["GET", "HEAD"])
 async def root():
@@ -78,5 +80,6 @@ async def root():
     }
 
 if __name__ == "__main__":
+    # Clears terminal on restart for cleaner logs
     os.system('cls' if os.name == 'nt' else 'clear')
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

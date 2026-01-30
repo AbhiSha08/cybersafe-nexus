@@ -7,7 +7,7 @@ from collections import defaultdict
 
 security = HTTPBearer()
 FAILED_LOGINS = defaultdict(list)
-TOKEN_BLACKLIST = set() # Single source of truth for logout
+TOKEN_BLACKLIST = set() # Simple in-memory blacklist (reset on restart)
 MAX_ATTEMPTS = 5
 BLOCK_TIME = 900 
 
@@ -15,19 +15,21 @@ def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 def verify_password(password: str, hashed: str) -> bool:
-    try: return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
-    except: return False
+    try: 
+        return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
+    except: 
+        return False
 
 def create_token(user_id: str, email: str, role: str, name: str = "Cadet") -> str:
     """
     Generates the JWT. 
-    Added 'name' to payload so SIEM logs can identify users instantly.
+    Includes 'name' and 'role' for frontend decoding.
     """
     payload = {
         'user_id': user_id, 
         'email': email, 
         'role': role, 
-        'name': name,  # Added for UI/Logs context
+        'name': name,
         'iat': datetime.now(timezone.utc),
         'exp': datetime.now(timezone.utc) + timedelta(hours=settings.JWT_EXPIRATION_HOURS)
     }
@@ -49,8 +51,8 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 
 async def get_current_user_optional(credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False))):
     """
-    Optional authentication - returns user data if token is valid, None otherwise.
-    Used for endpoints that should work for both authenticated and guest users.
+    Returns user payload if valid, None if invalid/missing.
+    Does NOT raise an exception.
     """
     if not credentials:
         return None
@@ -63,8 +65,6 @@ async def get_current_user_optional(credentials: HTTPAuthorizationCredentials = 
     try:
         payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
         return payload
-    except jwt.ExpiredSignatureError:
-        return None
     except Exception:
         return None
 
@@ -79,9 +79,10 @@ async def validate_admin(user=Depends(get_current_user)):
 
 def check_brute_force(ip: str):
     now = time.time()
+    # Filter out old attempts
     FAILED_LOGINS[ip] = [t for t in FAILED_LOGINS[ip] if now - t < BLOCK_TIME]
     if len(FAILED_LOGINS[ip]) >= MAX_ATTEMPTS:
-        raise HTTPException(status_code=429, detail="Security Block: Too many attempts.")
+        raise HTTPException(status_code=429, detail="Security Block: Too many attempts. Try again later.")
 
 def log_failed_attempt(ip: str):
     FAILED_LOGINS[ip].append(time.time())

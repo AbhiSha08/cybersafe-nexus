@@ -5,11 +5,11 @@ pymongo
 python-jose[cryptography]
 passlib[bcrypt]
 python-multipart
-google-generativeai
+google-generativeai>=0.3.2
 python-whois
 dnspython
 requests
 pydantic[email]
-PyJWT
+pydantic-settings
 python-dotenv
 psutil

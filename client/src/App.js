@@ -17,7 +17,7 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import LessonView from './pages/LessonView';
-import QuizView from './pages/QuizView'; // <--- NEW IMPORT
+import QuizView from './pages/QuizView'; 
 import CyberTools from './pages/CyberTools'; 
 import News from './pages/News';
 import Updates from './pages/Updates';
@@ -46,7 +46,7 @@ const PageTracker = ({ children }) => {
     if (path === '/dashboard') setCurrentPage('dashboard');
     else if (path === '/admin') setCurrentPage('admin');
     else if (path === '/tools') setCurrentPage('simulation'); 
-    else if (path.startsWith('/lesson/') && path.includes('quiz')) setCurrentPage('quiz'); // Updated Logic
+    else if (path.startsWith('/lesson/') && path.includes('quiz')) setCurrentPage('quiz'); 
     else if (path.startsWith('/lesson/')) setCurrentPage('quiz');
     else if (path === '/news') setCurrentPage('news');
     else if (path === '/') setCurrentPage('home');
@@ -81,7 +81,7 @@ function App() {
           <PageTracker>
             
             {/* --- GLOBAL BACKGROUND LAYER --- */}
-            {/* Contains grid and multiple traveling lights */}
+            {/* Updated to min-h-[100dvh] for full mobile coverage */}
             <div className={`fixed inset-0 z-[-1] transition-colors duration-500 ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
               <div className={`absolute inset-0 cyber-grid ${!isDarkMode ? 'light-mode' : ''}`}>
                  {/* MULTIPLE LIGHTS */}
@@ -93,7 +93,9 @@ function App() {
               <div className={`absolute inset-0 ${isDarkMode ? 'bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.05)_0%,transparent_70%)]' : 'bg-[radial-gradient(circle_at_center,rgba(13,148,136,0.05)_0%,transparent_70%)]'}`}></div>
             </div>
 
-            <div className="relative z-10 flex flex-col min-h-screen">
+            {/* MAIN LAYOUT CONTAINER */}
+            {/* Updated min-h-screen to min-h-[100dvh] to fix mobile browser bar clipping */}
+            <div className="relative z-10 flex flex-col min-h-[100dvh]">
               <Navbar isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
               <SecurityTicker isDarkMode={isDarkMode} />
               
@@ -125,14 +127,12 @@ function App() {
                     </PrivateRoute>
                   } />
                   
-                  {/* LESSON READING VIEW */}
                   <Route path="/lesson/:id" element={
                     <PrivateRoute>
                       <LessonView isDarkMode={isDarkMode} />
                     </PrivateRoute>
                   } />
 
-                  {/* QUIZ/SIMULATION VIEW (NEW) */}
                   <Route path="/lesson/:lessonId/quiz" element={
                     <PrivateRoute>
                       <QuizView isDarkMode={isDarkMode} />

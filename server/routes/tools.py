@@ -137,11 +137,14 @@ async def analyze_target_url(data: dict, user=Depends(get_current_user)):
 
 # --- LOGGING & SCORING ---
 @router.post("/log-simulation")
-async def log_security_event(data: SimulationLog, user=Depends(get_current_user)):
-    user_id = str(user.get('user_id') or user.get('id'))
-    
-    doc = {
-        "user_id": user_id,
+async def log_security_event(data: SimulationLog, user_payload=Depends(get_current_user)):
+    """
+    Logs security events. 
+    Now correctly captures 'cadet_name' from the updated Token Payload.
+    """
+    event_doc = {
+        "user_id": user_payload['user_id'],
+        "cadet_name": user_payload.get('name', 'Cadet'), # Now works because of security.py update
         "tool": data.tool_name,
         "risk": data.risk_level,
         "summary": data.result_summary,

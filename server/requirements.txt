@@ -13,3 +13,4 @@ pydantic[email]
 pydantic-settings
 python-dotenv
 psutil
+PyJWT

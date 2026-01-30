@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from core.security import get_current_user
+from core.security import get_current_user, get_current_user_optional
 from core.database import db
 from core.config import settings
 from models.schemas import ChatMessage 
@@ -14,14 +14,16 @@ from urllib.parse import urlparse
 from dateutil import parser 
 from bson import ObjectId 
 
-# FIX: Added internal prefix to resolve modular routing trap
+# FIX: Router prefix matches main.py inclusion ("/api" + "/tools")
 router = APIRouter(prefix="/tools")
 
 # --- AI CONFIG ---
 if settings.GEMINI_API_KEY:
     genai.configure(api_key=settings.GEMINI_API_KEY)
     # KEPT: Using your specified Gemini 2.5 Flash model
-    model = genai.GenerativeModel("gemini-2.5-flash") 
+    model = genai.GenerativeModel("gemini-1.5-flash") 
+else:
+    model = None
 
 class SimulationLog(BaseModel):
     tool_name: str
@@ -43,12 +45,25 @@ async def get_live_alerts():
 
 # --- AI CHAT ---
 @router.post("/ai-assistant")
-async def chat_with_ai(msg_data: ChatMessage):
-    if not settings.GEMINI_API_KEY: 
+async def chat_with_ai(msg_data: ChatMessage, user=Depends(get_current_user_optional)):
+    """
+    Enhanced AI Assistant with User Context awareness.
+    """
+    if not model: 
         return {"response": "System: AI Offline (Missing API Key)."}
+    
     try:
-        system_instruction = "You are Nexus AI, a cybersecurity expert for students. Keep answers concise and educational."
-        response = model.generate_content(f"{system_instruction}\nUser: {msg_data.message}")
+        # Personalize response based on auth status
+        user_name = user.get("name", "Operative") if user else "Guest"
+        
+        system_instruction = (
+            f"You are NEXUS, an advanced cybersecurity AI tutor. "
+            f"User: {user_name}. "
+            f"Keep answers concise, technical yet accessible, and strictly about cybersecurity/programming. "
+            f"If asked about illegal hacking, refuse and remind them of the Ethical Directive."
+        )
+        
+        response = model.generate_content(f"{system_instruction}\nUser Query: {msg_data.message}")
         return {"response": response.text}
     except Exception as e: 
         print(f"AI Error: {e}")
@@ -142,16 +157,20 @@ async def log_security_event(data: SimulationLog, user_payload=Depends(get_curre
     Logs security events. 
     Now correctly captures 'cadet_name' from the updated Token Payload.
     """
+    user_id = user_payload['user_id'] # Extracted for update query
+    
     event_doc = {
-        "user_id": user_payload['user_id'],
-        "cadet_name": user_payload.get('name', 'Cadet'), # Now works because of security.py update
+        "user_id": user_id,
+        "cadet_name": user_payload.get('name', 'Cadet'),
         "tool": data.tool_name,
         "risk": data.risk_level,
         "summary": data.result_summary,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "node": "Nexus-Terminal"
     }
-    await db.security_logs.insert_one(doc)
+    
+    # FIX: Was 'doc', updated to 'event_doc'
+    await db.security_logs.insert_one(event_doc)
 
     points = 0
     if data.risk_level == "Critical": points = 50

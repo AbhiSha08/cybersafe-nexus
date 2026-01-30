@@ -12,7 +12,6 @@ export default function SecurityLogs({ isDarkMode }) {
   const fetchLogs = async () => {
     setLoading(true);
     try {
-      /** FIX: Added /api prefix to match FastAPI router prefix in main.py */
       const res = await api.get('/api/tools/security-logs');
       setLogs(res.data);
     } catch (err) {
@@ -72,7 +71,7 @@ export default function SecurityLogs({ isDarkMode }) {
          </div>
          <div className="relative">
              <Filter size={16} className="absolute left-3 top-1/2 -translate-y-1/2 opacity-40"/>
-             <select value={filterModule} onChange={(e) => setFilterModule(e.target.value)} className={`py-2 pl-9 pr-8 rounded-lg text-xs font-bold outline-none border focus:border-cyan-500 appearance-none cursor-pointer ${themeInput}`}>
+             <select value={filterModule} onChange={(e) => setFilterModule(e.target.value)} className={`w-full md:w-auto py-2 pl-9 pr-8 rounded-lg text-xs font-bold outline-none border focus:border-cyan-500 appearance-none cursor-pointer ${themeInput}`}>
                 <option value="ALL">All Modules</option>
                 <option value="Phishing">Phishing</option>
                 <option value="SQLi">SQL Injection</option>
@@ -81,7 +80,7 @@ export default function SecurityLogs({ isDarkMode }) {
          </div>
          <div className="relative">
              <div className={`w-2 h-2 rounded-full absolute left-3 top-1/2 -translate-y-1/2 ${filterRisk === 'Critical' ? 'bg-red-500' : 'bg-slate-400'}`}/>
-             <select value={filterRisk} onChange={(e) => setFilterRisk(e.target.value)} className={`py-2 pl-8 pr-8 rounded-lg text-xs font-bold outline-none border focus:border-cyan-500 appearance-none cursor-pointer ${themeInput}`}>
+             <select value={filterRisk} onChange={(e) => setFilterRisk(e.target.value)} className={`w-full md:w-auto py-2 pl-8 pr-8 rounded-lg text-xs font-bold outline-none border focus:border-cyan-500 appearance-none cursor-pointer ${themeInput}`}>
                 <option value="ALL">All Risks</option>
                 <option value="Critical">Critical</option>
                 <option value="High">High</option>
@@ -92,8 +91,9 @@ export default function SecurityLogs({ isDarkMode }) {
       </div>
 
       <div className={`rounded-[2rem] border overflow-hidden ${isDarkMode ? 'bg-slate-900/40 border-slate-800' : 'bg-white shadow-xl'}`}>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
+        {/* FIX: Added overflow-x-auto wrapper */}
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-left min-w-[600px]">
             <thead>
               <tr className={`text-[10px] font-black uppercase tracking-[0.3em] ${isDarkMode ? 'bg-slate-800/50 text-slate-500' : 'bg-gray-50 text-gray-400'}`}>
                 <th className="p-6">Timestamp</th>
@@ -115,7 +115,7 @@ export default function SecurityLogs({ isDarkMode }) {
                       {log.risk || log.risk_level}
                     </span>
                   </td>
-                  <td className="p-6 text-xs italic opacity-60 font-medium">{log.summary || log.result_summary}</td>
+                  <td className="p-6 text-xs italic opacity-60 font-medium whitespace-nowrap md:whitespace-normal">{log.summary || log.result_summary}</td>
                 </tr>
               )) : (
                 <tr><td colSpan="4" className="p-20 text-center opacity-20 font-black uppercase tracking-widest text-xs">No matching events found</td></tr>

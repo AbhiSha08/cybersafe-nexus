@@ -26,13 +26,11 @@ export default function LessonView({ isDarkMode }) {
     const fetchData = async () => {
       try {
         setLoading(true);
-        setIsQuizLocked(false); // Reset lock state
+        setIsQuizLocked(false); 
 
-        // 1. Fetch Current Lesson
         const res = await api.get(`/api/lessons/${id}`);
         setLesson(res.data);
         
-        // 2. Fetch All Lessons (for Order)
         const allRes = await api.get('/api/lessons');
         const sorted = allRes.data.sort((a, b) => {
              const numA = parseInt(a.id.split('_')[1] || 999);
@@ -41,15 +39,12 @@ export default function LessonView({ isDarkMode }) {
         });
         setAllLessons(sorted);
 
-        // 3. CHECK QUIZ LOCK STATUS
         const currentIndex = sorted.findIndex(l => l.id === id);
         
-        // If it's not the first lesson, check if PREVIOUS lesson is completed
         if (currentIndex > 0) {
             const prevLesson = sorted[currentIndex - 1];
             const userRes = await api.get('/api/users/me');
             
-            // Normalize Data
             const rawCompleted = userRes.data.completed_lessons || [];
             const completedIDs = rawCompleted.map(item => {
                 if (typeof item === 'object' && item !== null) {
@@ -102,11 +97,12 @@ export default function LessonView({ isDarkMode }) {
   };
 
   return (
-    <div className={`min-h-screen ${styles.bg} pb-20`}>
+    // FIX: min-h-[100dvh], overflow-x-hidden for mobile content safety
+    <div className={`min-h-[100dvh] ${styles.bg} pb-20 font-sans overflow-x-hidden`}>
       
       {/* 1. NAV HEADER */}
-      <div className={`sticky top-0 z-30 border-b backdrop-blur-md px-6 h-14 flex items-center justify-between ${isDarkMode ? 'bg-slate-950/90 border-slate-800' : 'bg-white/90 border-slate-200'}`}>
-        <button onClick={() => navigate('/dashboard')} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest hover:text-cyan-500 transition-colors">
+      <div className={`sticky top-0 z-30 border-b backdrop-blur-md px-4 md:px-6 h-14 md:h-16 flex items-center justify-between ${isDarkMode ? 'bg-slate-950/90 border-slate-800' : 'bg-white/90 border-slate-200'}`}>
+        <button onClick={() => navigate('/dashboard')} className="flex items-center gap-2 text-[10px] md:text-xs font-black uppercase tracking-widest hover:text-cyan-500 transition-colors">
             <ArrowLeft size={14} /> Dashboard
         </button>
         <div className={`flex items-center gap-2 px-3 py-1 rounded-full border ${isDarkMode ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-slate-100'}`}>
@@ -116,11 +112,12 @@ export default function LessonView({ isDarkMode }) {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 py-8">
+      <div className="max-w-4xl mx-auto px-4 md:px-6 py-8">
         
         {/* 2. HERO */}
         <div className="mb-8">
-            <h1 className={`text-3xl md:text-4xl font-black uppercase tracking-tight leading-tight mb-2 ${styles.text}`}>
+            {/* Fluid Type for Title */}
+            <h1 className={`text-2xl md:text-4xl font-black uppercase tracking-tight leading-tight mb-2 ${styles.text}`}>
                 {lesson.title}
             </h1>
             <div className="flex items-center gap-4 text-xs font-medium text-slate-500">
@@ -132,7 +129,7 @@ export default function LessonView({ isDarkMode }) {
         {/* 3. CONTENT */}
         <div className="space-y-6">
             
-            {/* MAIN CONTENT (Restored Image Classes Here) */}
+            {/* MAIN CONTENT */}
             <section className={`p-6 rounded-2xl border ${styles.card}`}>
                 <h2 className={styles.sectionTitle}>
                     <BookOpen size={16} /> Briefing
@@ -141,8 +138,6 @@ export default function LessonView({ isDarkMode }) {
                     className={`prose prose-sm max-w-none 
                     ${isDarkMode ? 'prose-invert text-slate-300' : 'text-slate-700'} 
                     prose-headings:font-bold prose-headings:uppercase prose-headings:tracking-wide 
-                    
-                    /* RESTORED IMAGE STYLES */
                     prose-img:rounded-xl prose-img:shadow-lg prose-img:border 
                     prose-img:border-slate-700 prose-img:w-full prose-img:object-cover prose-img:my-6`}
                     
@@ -150,7 +145,7 @@ export default function LessonView({ isDarkMode }) {
                 />
             </section>
 
-            {/* TWO COLUMNS: OUTCOME & ACTION */}
+            {/* FIX: Stacked grid on mobile (grid-cols-1) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <section className={`p-6 rounded-2xl border border-dashed ${isDarkMode ? 'border-slate-800 bg-slate-900/30' : 'border-slate-300 bg-blue-50/50'}`}>
                     <h2 className={styles.sectionTitle}>

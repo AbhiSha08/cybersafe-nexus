@@ -4,10 +4,10 @@ import { AuthProvider } from './contexts/AuthContext';
 import { UIProvider, useUIContext } from './contexts/UIContext';
 
 // Components
-import Navbar from './components/Navbar';
-import SecurityTicker from './components/SecurityTicker';
-import Footer from './components/Footer';
-import AiAssistant from './components/AiAssistant';
+import Navbar from './components/UIcomponents/Navbar'; // Ensure path matches your structure
+import SecurityTicker from './components/UIcomponents/SecurityTicker';
+import Footer from './components/UIcomponents/Footer';
+import AiAssistant from './components/UIcomponents/AiAssistant';
 
 // Pages
 import Home from './pages/Home';
@@ -94,7 +94,7 @@ function App() {
             </div>
 
             {/* MAIN LAYOUT CONTAINER */}
-            {/* Updated min-h-screen to min-h-[100dvh] to fix mobile browser bar clipping */}
+            {/* FIX: min-h-[100dvh] ensures footer sticks to bottom on tall mobile screens */}
             <div className="relative z-10 flex flex-col min-h-[100dvh]">
               <Navbar isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
               <SecurityTicker isDarkMode={isDarkMode} />

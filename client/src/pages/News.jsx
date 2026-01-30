@@ -4,7 +4,7 @@ import { ExternalLink, RefreshCw, AlertTriangle, Smartphone, Rocket, Car, Shield
 import { useUIContext } from '../contexts/UIContext';
 
 export default function News({ isDarkMode }) {
-  const { setNewsData, isHighlighted } = useUIContext();
+  const { setNewsData } = useUIContext();
   const [loading, setLoading] = useState(true);
   const [feeds, setFeeds] = useState({ cyber: [], gadgets: [], automotive: [], space: [] });
 
@@ -49,20 +49,22 @@ export default function News({ isDarkMode }) {
   };
 
   return (
+    // FIX: Using full max-width and padding for mobile
     <div className="max-w-[1600px] mx-auto px-4 py-8 font-sans">
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex justify-between items-end mb-12 border-b border-slate-800/50 pb-8">
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 border-b border-slate-800/50 pb-8 gap-6">
         <div>
-          <h1 className={`text-4xl font-black flex items-center gap-5 tracking-tighter ${theme.text}`}>
-            <AlertTriangle className="text-amber-500 animate-pulse" size={44} /> Global Intelligence Feed
+          <h1 className={`text-3xl md:text-4xl font-black flex items-center gap-3 md:gap-5 tracking-tighter ${theme.text}`}>
+            <AlertTriangle className="text-amber-500 animate-pulse" size={40} /> Global Intelligence Feed
           </h1>
-          <p className={`${theme.subText} mt-3 text-lg font-medium`}>Multi-domain technical intelligence tracking.</p>
+          <p className={`${theme.subText} mt-3 text-sm md:text-lg font-medium`}>Multi-domain technical intelligence tracking.</p>
         </div>
-        <button onClick={fetchAllFeeds} className="flex items-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase bg-cyan-600 hover:bg-cyan-500 text-white transition-all shadow-lg shadow-cyan-500/20">
+        <button onClick={fetchAllFeeds} className="flex items-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase bg-cyan-600 hover:bg-cyan-500 text-white transition-all shadow-lg shadow-cyan-500/20 w-full md:w-auto justify-center">
           <RefreshCw size={18} className={loading ? 'animate-spin' : ''} /> {loading ? 'SYNCING...' : 'REFRESH FEEDS'}
         </button>
       </motion.div>
 
-      <motion.div variants={containerVariants} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+      {/* FIX: 1-Column on Mobile, 4-Column on XL Screens */}
+      <motion.div variants={containerVariants} initial="hidden" animate="show" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8">
         {categories.map((cat) => (
           <motion.div key={cat.id} variants={itemVariants} className="flex flex-col">
             <div className={`flex items-center gap-3 p-5 rounded-t-[2rem] border-x border-t border-slate-800/50 ${isDarkMode ? 'bg-slate-900/60' : 'bg-slate-100'}`}>

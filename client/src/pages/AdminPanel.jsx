@@ -79,18 +79,20 @@ export default function AdminPanel({ isDarkMode }) {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10 space-y-10">
+    // FIX: px-4 and responsive spacing
+    <div className="max-w-7xl mx-auto px-4 py-8 md:py-10 space-y-8 md:space-y-10">
       
-      {/* 1. HEADER & HEALTH MONITOR */}
+      {/* 1. HEADER & HEALTH MONITOR (Stacked on Mobile) */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
         <div>
-          <h1 className={`text-4xl font-black tracking-tighter ${theme.text}`}>Root Command Center</h1>
-          <p className="text-[10px] font-black uppercase text-red-500 opacity-60 flex items-center gap-2">
+          <h1 className={`text-3xl md:text-4xl font-black tracking-tighter ${theme.text}`}>Root Command Center</h1>
+          <p className="text-[10px] font-black uppercase text-red-500 opacity-60 flex items-center gap-2 mt-1">
             <Activity size={12} className="animate-pulse" /> Operational Status: {health?.status || 'Online'}
           </p>
         </div>
 
-        <div className={`flex gap-8 p-4 rounded-2xl border ${theme.card}`}>
+        {/* Health Metrics wrap nicely */}
+        <div className={`flex flex-wrap gap-4 md:gap-8 p-4 rounded-2xl border ${theme.card} w-full lg:w-auto`}>
           <HealthMetric icon={Cpu} label="CPU" value={health?.cpu} />
           <HealthMetric icon={HardDrive} label="RAM" value={health?.memory} />
           <HealthMetric icon={Database} label="DB LATENCY" value={health?.db_latency} isValueOnly />
@@ -101,7 +103,7 @@ export default function AdminPanel({ isDarkMode }) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Personnel Ratio (Doughnut) */}
-        <div className={`p-8 rounded-3xl border ${theme.card}`}>
+        <div className={`p-6 md:p-8 rounded-3xl border ${theme.card}`}>
           <h3 className="text-xs font-black uppercase mb-6 opacity-50 flex items-center gap-2">
             <Users size={14} /> Identity Distribution
           </h3>
@@ -121,7 +123,7 @@ export default function AdminPanel({ isDarkMode }) {
         </div>
 
         {/* Threat Landscape (Bar) */}
-        <div className={`lg:col-span-2 p-8 rounded-3xl border ${theme.card}`}>
+        <div className={`lg:col-span-2 p-6 md:p-8 rounded-3xl border ${theme.card}`}>
           <h3 className="text-xs font-black uppercase mb-6 opacity-50 flex items-center gap-2">
             <BarChart3 size={14} /> Global Threat Simulation Activity
           </h3>
@@ -143,7 +145,7 @@ export default function AdminPanel({ isDarkMode }) {
 
       {/* 3. BROADCAST & REGISTRY SECTION */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className={`p-8 rounded-3xl border ${theme.card} space-y-6`}>
+        <div className={`p-6 md:p-8 rounded-3xl border ${theme.card} space-y-6`}>
           <div className="flex items-center gap-2">
             <Radio className="text-cyan-500 animate-pulse" size={20} />
             <h3 className={`font-black uppercase text-xs tracking-widest ${theme.text}`}>Global Intel Broadcast</h3>
@@ -159,13 +161,15 @@ export default function AdminPanel({ isDarkMode }) {
           </button>
         </div>
 
-        <div className={`lg:col-span-2 p-8 rounded-3xl border ${theme.card}`}>
+        <div className={`lg:col-span-2 p-6 md:p-8 rounded-3xl border ${theme.card}`}>
           <div className="flex items-center justify-between mb-8">
             <h3 className={`font-black uppercase text-xs tracking-widest ${theme.text}`}>Personnel Registry</h3>
             <span className="text-[10px] font-mono opacity-40">{users.length} Nodes Active</span>
           </div>
+          
+          {/* FIX: Table overflow for mobile */}
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="w-full text-left min-w-[500px]">
               <thead>
                 <tr className="text-[10px] font-black uppercase opacity-40 border-b border-slate-800">
                   <th className="pb-4">Cadet</th>
@@ -198,8 +202,8 @@ export default function AdminPanel({ isDarkMode }) {
       </div>
 
       {/* 4. DANGER ZONE (GLOBAL RESET) */}
-      <div className="mt-20 pt-10 border-t border-red-500/20">
-        <div className="p-8 rounded-3xl bg-red-500/5 border border-red-500/20">
+      <div className="mt-12 md:mt-20 pt-8 md:pt-10 border-t border-red-500/20">
+        <div className="p-6 md:p-8 rounded-3xl bg-red-500/5 border border-red-500/20">
             <h3 className="text-red-500 font-black uppercase text-xs flex items-center gap-2 mb-2">
                 <ShieldAlert size={16} /> Emergency Purge Protocol
             </h3>
@@ -208,7 +212,7 @@ export default function AdminPanel({ isDarkMode }) {
             </p>
             <button 
                 onClick={handleSystemReset}
-                className="px-8 py-3 bg-red-600 text-white text-[10px] font-black uppercase rounded-xl hover:bg-red-700 transition-all"
+                className="px-8 py-3 bg-red-600 text-white text-[10px] font-black uppercase rounded-xl hover:bg-red-700 transition-all w-full md:w-auto"
             >
                 Initiate Master Reset
             </button>

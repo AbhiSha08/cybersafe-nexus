@@ -54,23 +54,21 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // --- IMAGE UPLOAD LOGIC (WhatsApp Style) ---
+  // --- IMAGE UPLOAD LOGIC ---
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // 1. Basic Validation
-      if (file.size > 2 * 1024 * 1024) { // 2MB Limit
+      if (file.size > 2 * 1024 * 1024) { 
         alert("Image too large. Please select an image under 2MB.");
         return;
       }
 
-      // 2. Compress & Convert to Base64 (To save in DB without backend changes)
       const reader = new FileReader();
       reader.onload = (event) => {
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 500; // Resize to max 500px width (Like WhatsApp thumbnail)
+          const MAX_WIDTH = 500;
           const scaleSize = MAX_WIDTH / img.width;
           canvas.width = MAX_WIDTH;
           canvas.height = img.height * scaleSize;
@@ -78,8 +76,7 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-          // Convert to Base64 String
-          const dataUrl = canvas.toDataURL('image/jpeg', 0.7); // 70% Quality
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.7); 
           setFormData(prev => ({ ...prev, profile_picture: dataUrl }));
         };
         img.src = event.target.result;
@@ -115,7 +112,6 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
     setSelectedCert(null);
   };
 
-  // --- THEME CONFIG ---
   const theme = {
     bg: isDarkMode ? 'bg-slate-950' : 'bg-slate-50',
     card: isDarkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200 shadow-xl',
@@ -154,8 +150,8 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
         <div className="grid grid-cols-7 gap-2">
           {days.map((day, idx) => (
             <div key={idx} className={`aspect-square rounded-lg flex flex-col items-center justify-center border ${day.status ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-red-500/5 border-red-500/20'}`}>
-              <span className={`text-[10px] font-bold ${theme.subText}`}>{day.month}</span>
-              <span className={`text-lg font-black ${theme.text}`}>{day.date}</span>
+              <span className={`text-[8px] sm:text-[10px] font-bold ${theme.subText}`}>{day.month}</span>
+              <span className={`text-sm sm:text-lg font-black ${theme.text}`}>{day.date}</span>
             </div>
           ))}
         </div>
@@ -185,9 +181,9 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
             const displayName = lessonId.replace(/_/g, ' ').replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
 
             return (
-                <div key={idx} className={`p-4 rounded-xl border flex items-center justify-between ${theme.card}`}>
+                <div key={idx} className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${theme.card}`}>
                 <div className="flex items-center gap-4">
-                    <div className="p-2 bg-cyan-500/10 rounded-lg text-cyan-500">
+                    <div className="p-2 bg-cyan-500/10 rounded-lg text-cyan-500 shrink-0">
                     <FileText size={20} />
                     </div>
                     <div>
@@ -199,7 +195,7 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
                     </div>
                     </div>
                 </div>
-                <div className="text-emerald-500 text-xs font-black uppercase tracking-widest bg-emerald-500/10 px-2 py-1 rounded">
+                <div className="text-emerald-500 text-xs font-black uppercase tracking-widest bg-emerald-500/10 px-2 py-1 rounded self-start sm:self-center">
                     PASSED
                 </div>
                 </div>
@@ -215,7 +211,7 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
       <h3 className={`text-xl font-black uppercase tracking-tight mb-6 flex items-center gap-2 ${theme.text}`}>
         <Award className="text-yellow-500" /> Credentials Vault
       </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
            {(!certificates || certificates.length === 0) ? (
               <div className="col-span-2 text-center py-10 opacity-50">No certificates acquired.</div>
            ) : (
@@ -259,26 +255,27 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
   );
 
   return (
-    <div className={`min-h-screen p-6 md:p-12 transition-colors duration-500 font-sans ${theme.bg}`}>
+    // FIX: Using min-h-[100dvh] for mobile full height, added overflow-x-hidden
+    <div className={`min-h-[100dvh] p-4 md:p-12 transition-colors duration-500 font-sans overflow-x-hidden ${theme.bg}`}>
       
       {/* Background Effect */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className={`absolute top-0 right-0 w-96 h-96 rounded-full blur-[120px] opacity-10 ${isDarkMode ? 'bg-cyan-600' : 'bg-cyan-400'}`}></div>
+          <div className={`absolute top-0 right-0 w-64 md:w-96 h-64 md:h-96 rounded-full blur-[120px] opacity-10 ${isDarkMode ? 'bg-cyan-600' : 'bg-cyan-400'}`}></div>
       </div>
 
-      <div className="max-w-4xl mx-auto space-y-8 relative z-10">
+      <div className="max-w-4xl mx-auto space-y-6 md:space-y-8 relative z-10">
         
         {/* HEADER CARD */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className={`relative overflow-hidden p-8 rounded-[2.5rem] border backdrop-blur-xl ${theme.card}`}
+          className={`relative overflow-hidden p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border backdrop-blur-xl ${theme.card}`}
         >
-          <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-8">
+          <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
             
             {/* Avatar Section */}
             <div className="relative group">
-              <div className={`w-32 h-32 rounded-full flex items-center justify-center border-4 text-4xl font-black overflow-hidden ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-400' : 'bg-slate-100 border-white text-slate-600 shadow-lg'}`}>
+              <div className={`w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center border-4 text-3xl md:text-4xl font-black overflow-hidden ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-400' : 'bg-slate-100 border-white text-slate-600 shadow-lg'}`}>
                 {(isEditing && formData.profile_picture) || user.profile_picture ? (
                     <img 
                       src={isEditing ? formData.profile_picture : user.profile_picture} 
@@ -290,7 +287,7 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
                 )}
               </div>
               
-              {/* Camera Icon - Only visible in Edit Mode */}
+              {/* Camera Icon */}
               {isEditing && (
                 <>
                   <input 
@@ -302,10 +299,10 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
                   />
                   <button 
                     onClick={() => fileInputRef.current.click()}
-                    className="absolute -bottom-2 -right-2 p-2.5 bg-cyan-600 hover:bg-cyan-500 rounded-full text-white shadow-lg border-2 border-white transition-all transform hover:scale-110 active:scale-95"
+                    className="absolute -bottom-1 -right-1 md:-bottom-2 md:-right-2 p-2 bg-cyan-600 hover:bg-cyan-500 rounded-full text-white shadow-lg border-2 border-white transition-all transform hover:scale-110 active:scale-95"
                     title="Change Profile Photo"
                   >
-                    <Camera size={16} />
+                    <Camera size={14} />
                   </button>
                 </>
               )}
@@ -315,11 +312,10 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
             <div className="text-center md:text-left flex-1 w-full">
               {isEditing ? (
                   <div className="space-y-4 max-w-lg">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <input name="name" value={formData.name} onChange={handleInputChange} placeholder="Name" className={`px-4 py-2 rounded-xl text-sm border outline-none ${theme.input}`} />
                         <input name="organization" value={formData.organization} onChange={handleInputChange} placeholder="Org" className={`px-4 py-2 rounded-xl text-sm border outline-none ${theme.input}`} />
                     </div>
-                    {/* Removed Avatar URL input since we have the button now */}
                     <input name="email" value={formData.email} onChange={handleInputChange} placeholder="Email" className={`w-full px-4 py-2 rounded-xl text-sm border outline-none ${theme.input}`} />
                     
                     <div className="pt-2 border-t border-slate-700/30 mt-2">
@@ -327,15 +323,16 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
                       <input type="password" name="password" placeholder="Enter Current Password" value={formData.password} onChange={handleInputChange} className={`w-full px-4 py-2 rounded-xl text-sm border outline-none ${theme.input}`} />
                     </div>
                     
-                    <div className="flex gap-3 pt-2">
-                        <button onClick={handleSave} className="flex items-center gap-2 px-6 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-bold uppercase tracking-wide transition-all"><Save size={14} /> Save Changes</button>
+                    <div className="flex gap-3 pt-2 justify-center md:justify-start">
+                        <button onClick={handleSave} className="flex items-center gap-2 px-6 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-bold uppercase tracking-wide transition-all"><Save size={14} /> Save</button>
                         <button onClick={() => setIsEditing(false)} className="flex items-center gap-2 px-6 py-2 bg-slate-600 hover:bg-slate-500 text-white rounded-xl text-xs font-bold uppercase tracking-wide transition-all"><X size={14} /> Cancel</button>
                     </div>
                   </div>
               ) : (
                   <>
-                    <div className="flex flex-col md:flex-row items-center gap-3 mb-2">
-                        <h1 className={`text-3xl font-black tracking-tight ${theme.text}`}>{user.name}</h1>
+                    <div className="flex flex-col md:flex-row items-center gap-3 mb-2 justify-center md:justify-start">
+                        {/* FIX: clamp() font size for Name */}
+                        <h1 className={`text-2xl md:text-3xl font-black tracking-tight ${theme.text}`}>{user.name}</h1>
                         <span className="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-500 text-[10px] font-black uppercase tracking-widest">
                         {user.profile_type || "Cadet"}
                         </span>
@@ -343,7 +340,7 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
                             <Edit2 size={16} />
                         </button>
                     </div>
-                    <div className="flex flex-col md:flex-row items-center gap-6 text-sm font-medium opacity-70">
+                    <div className="flex flex-col md:flex-row items-center gap-2 md:gap-6 text-sm font-medium opacity-70">
                         <span className={`flex items-center gap-2 ${theme.subText}`}><Mail size={14} /> {user.email}</span>
                         <span className={`flex items-center gap-2 ${theme.subText}`}><Award size={14} /> {user.organization || "No Org"}</span>
                     </div>
@@ -353,21 +350,22 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
 
             {/* Logout */}
             {!isEditing && (
-                <button onClick={handleLogout} className="px-5 py-3 rounded-xl border border-red-500/30 text-red-500 hover:bg-red-500/10 text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2">
-                <LogOut size={16} /> Disconnect
+                <button onClick={handleLogout} className="px-5 py-3 rounded-xl border border-red-500/30 text-red-500 hover:bg-red-500/10 text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 self-center md:self-start">
+                <LogOut size={16} /> <span className="hidden md:inline">Disconnect</span>
                 </button>
             )}
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* FIX: Stacked on mobile (grid-cols-1), Side-by-side on desktop */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           
           {/* STATS SECTION */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
-            className={`p-8 rounded-[2.5rem] border ${theme.card}`}
+            className={`p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border ${theme.card}`}
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="p-3 rounded-xl bg-purple-500/10 text-purple-500"><Crown size={24} /></div>
@@ -388,7 +386,7 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
-            className={`p-8 rounded-[2.5rem] border ${theme.card}`}
+            className={`p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border ${theme.card}`}
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-500"><Lock size={24} /></div>
@@ -427,12 +425,13 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
             className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
             onClick={closeModal}
           >
+            {/* FIX: Modal max-width and max-height for mobile */}
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }} 
               animate={{ scale: 1, opacity: 1, y: 0 }} 
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()} 
-              className={`relative p-8 rounded-3xl border shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto custom-scrollbar ${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}
+              className={`relative p-6 md:p-8 rounded-[2rem] border shadow-2xl overflow-hidden max-h-[85vh] w-full max-w-lg md:max-w-2xl overflow-y-auto custom-scrollbar ${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}
             >
                <button onClick={closeModal} className="absolute top-4 right-4 p-2 rounded-full hover:bg-red-500/20 text-slate-500 hover:text-red-500 transition-colors">
                  <X size={20} />

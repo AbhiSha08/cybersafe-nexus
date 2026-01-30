@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { 
-  ShieldAlert, Globe, Database, Key, Terminal, Info, Clock, Zap, Activity, Loader2, ChevronDown, ChevronUp, Unlock, Lock
+  Globe, Database, Key, Terminal, Loader2, ChevronDown, ChevronUp, Unlock, Lock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../api';
@@ -20,7 +20,6 @@ export const PhishingSimulator = ({ isDarkMode }) => {
     setShowTechDetails(false);
 
     try {
-      /** FIX: Added /api prefix for production routing */
       const response = await api.post('/api/tools/analyze-url', { url: url });
       const result = response.data; 
       const safetyScore = Math.max(0, 100 - result.risk_score);
@@ -33,7 +32,6 @@ export const PhishingSimulator = ({ isDarkMode }) => {
       });
 
       try {
-        /** FIX: Added /api prefix for SIEM logging */
         await api.post('/api/tools/log-simulation', {
           tool_name: "Phishing Analyzer",
           input_data: result.target || url,
@@ -62,7 +60,7 @@ export const PhishingSimulator = ({ isDarkMode }) => {
         <div className="absolute left-5 top-1/2 -translate-y-1/2 text-cyan-500">
           {isAnalyzing ? <Loader2 size={20} className="animate-spin" /> : <Globe size={20} />}
         </div>
-        <button type="submit" disabled={isAnalyzing} className="absolute right-3 top-3 bottom-3 px-8 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-black text-[11px] uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50">
+        <button type="submit" disabled={isAnalyzing} className="absolute right-3 top-3 bottom-3 px-4 md:px-8 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-black text-[10px] md:text-[11px] uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50">
           {isAnalyzing ? 'SCANNING...' : 'CHECK_SAFETY'}
         </button>
       </form>
@@ -142,7 +140,6 @@ export const SQLiLab = ({ isDarkMode }) => {
         setLoading(false);
     
         if (breached) {
-             /** FIX: Added /api prefix for SIEM logging */
              api.post('/api/tools/log-simulation', {
                 tool_name: "SQLi Playground",
                 input_data: input,
@@ -160,8 +157,9 @@ export const SQLiLab = ({ isDarkMode }) => {
   };
 
   return (
+    // FIX: Stacked grid for mobile
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
-      <div className={`p-8 rounded-[2.5rem] border flex flex-col justify-center ${isDarkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-white shadow-xl'}`}>
+      <div className={`p-6 md:p-8 rounded-[2.5rem] border flex flex-col justify-center ${isDarkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-white shadow-xl'}`}>
         <h3 className="font-black text-[10px] uppercase tracking-[0.2em] mb-8 flex items-center gap-2 opacity-50">
             <Terminal size={18} className="text-cyan-500"/> Authenticate
         </h3>
@@ -216,13 +214,15 @@ export const SQLiLab = ({ isDarkMode }) => {
         </div>
       </div>
 
-      <div className={`p-8 rounded-[2.5rem] border relative overflow-hidden flex flex-col ${isBreached ? 'border-red-500/50 bg-red-950/10' : 'border-slate-800 bg-black'}`}>
+      <div className={`p-6 md:p-8 rounded-[2.5rem] border relative overflow-hidden flex flex-col ${isBreached ? 'border-red-500/50 bg-red-950/10' : 'border-slate-800 bg-black'}`}>
         <div className="flex justify-between items-center mb-6 z-10">
           <span className="text-slate-500 uppercase tracking-widest text-[10px] font-black">// DATABASE_RESPONSE_NODE</span>
           {isBreached ? <Unlock size={18} className="text-red-500 animate-pulse"/> : <Lock size={18} className="text-emerald-500"/>}
         </div>
-        <div className="flex-1 overflow-y-auto z-10 font-mono text-xs">
-           <table className="w-full text-left border-collapse">
+        
+        {/* FIX: Horizontal Scroll for Table */}
+        <div className="flex-1 overflow-y-auto overflow-x-auto z-10 font-mono text-xs w-full">
+           <table className="w-full text-left border-collapse min-w-[300px]">
              <thead>
                  <tr className="text-slate-500 border-b border-slate-800">
                     <th className="py-2">ID</th>
@@ -277,7 +277,6 @@ export const PasswordAuditor = ({ isDarkMode }) => {
     const handleLog = async () => {
       if (entropy < 10 || pwd === lastLogged.current) return;
       try {
-        /** FIX: Added /api prefix for SIEM logging */
         await api.post('/api/tools/log-simulation', {
           tool_name: "Password Auditor",
           input_data: "[REDACTED_NODE]",
@@ -306,6 +305,8 @@ export const PasswordAuditor = ({ isDarkMode }) => {
         <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
           <motion.div animate={{ width: `${Math.min(entropy, 100)}%`, backgroundColor: entropy > 50 ? '#10b981' : entropy > 30 ? '#f59e0b' : '#ef4444' }} className="h-full transition-all duration-500" />
         </div>
+        
+        {/* FIX: Stacked grid for results on mobile */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className={`p-8 rounded-[2.5rem] border ${theme} text-center`}>
             <p className="text-4xl font-black tracking-tighter">{entropy}</p>

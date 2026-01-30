@@ -60,17 +60,18 @@ export default function ResetPassword({ isDarkMode }) {
   };
 
   return (
-    <div className={`flex items-center justify-center min-h-screen transition-colors duration-500 ${theme.bg}`}>
+    // FIX: min-h-[100dvh] + responsive px-4
+    <div className={`flex items-center justify-center min-h-[100dvh] px-4 py-8 transition-colors duration-500 ${theme.bg}`}>
       
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className={`relative overflow-hidden p-10 rounded-[2.5rem] w-full max-w-md border ${theme.card}`}
+        className={`relative overflow-hidden p-8 md:p-10 rounded-[2.5rem] w-full max-w-md border ${theme.card}`}
       >
         {/* --- BACK BUTTON (INSIDE CARD) --- */}
         <button 
             onClick={() => navigate('/login')} 
-            className="absolute top-8 left-8 p-2 rounded-full hover:bg-slate-500/10 text-slate-500 transition-all group"
+            className="absolute top-6 left-6 md:top-8 md:left-8 p-2 rounded-full hover:bg-slate-500/10 text-slate-500 transition-all group"
             title="Cancel"
         >
             <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
@@ -78,11 +79,11 @@ export default function ResetPassword({ isDarkMode }) {
 
         <motion.div animate={{ top: ["0%", "100%", "0%"] }} transition={{ duration: 5, repeat: Infinity, ease: "linear" }} className="absolute left-0 right-0 h-[1px] bg-cyan-500/20 blur-sm z-20" />
 
-        <div className="text-center mb-10 mt-6">
+        <div className="text-center mb-8 md:mb-10 mt-6">
           <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center bg-cyan-500/10 border border-cyan-500/20 mb-6">
             <KeyRound className={`w-8 h-8 ${theme.accent}`} />
           </div>
-          <h1 className={`text-3xl font-black tracking-tighter ${theme.text}`}>New Access Key</h1>
+          <h1 className={`text-2xl md:text-3xl font-black tracking-tighter ${theme.text}`}>New Access Key</h1>
           <p className={`text-[10px] font-black uppercase tracking-widest mt-2 text-slate-500`}>Securely re-initialize identity credentials.</p>
         </div>
 
@@ -93,7 +94,7 @@ export default function ResetPassword({ isDarkMode }) {
               <p className={`text-[10px] font-bold text-slate-500`}>Redirecting to terminal...</p>
             </motion.div>
           ) : (
-            <form onSubmit={handleReset} className="space-y-6">
+            <form onSubmit={handleReset} className="space-y-5 md:space-y-6">
               {error && <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-500 text-[10px] font-black uppercase rounded-xl text-center flex items-center justify-center gap-2"><AlertTriangle size={12}/> {error}</div>}
               
               {/* TOKEN INPUT */}
@@ -155,7 +156,7 @@ export default function ResetPassword({ isDarkMode }) {
               </div>
 
               {/* VALIDATION GRID */}
-              <div className={`mt-4 p-4 rounded-2xl border flex flex-wrap gap-3 text-[9px] font-black uppercase tracking-tighter justify-center ${isDarkMode ? 'bg-slate-950/50 border-slate-800' : 'bg-slate-50 border-slate-100'}`}>
+              <div className={`mt-4 p-4 rounded-2xl border flex flex-wrap gap-2 md:gap-3 text-[9px] font-black uppercase tracking-tighter justify-center ${isDarkMode ? 'bg-slate-950/50 border-slate-800' : 'bg-slate-50 border-slate-100'}`}>
                   {Object.entries(validations).filter(([k]) => k !== 'match').map(([key, met]) => (
                     <div key={key} className={`flex items-center gap-1.5 px-2 py-1 rounded-lg ${met ? 'bg-emerald-500/10 text-emerald-500' : 'bg-slate-500/10 text-slate-500 opacity-50'}`}>
                       {met ? <Check size={10} strokeWidth={4} /> : <X size={10} />} 

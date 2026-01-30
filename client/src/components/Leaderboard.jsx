@@ -1,50 +1,48 @@
 import React, { useEffect, useState } from 'react';
-import { Crown, Medal, Trophy } from 'lucide-react';
+import { Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
-import api from '../api';
+import api from '../../api'; // Adjusted path for UIcomponents folder
 
-// --- PODIUM COMPONENT (Moved outside to prevent re-render bugs) ---
+// --- PODIUM COMPONENT ---
 const PodiumUser = ({ user, rank, isDarkMode }) => {
   if (!user) return <div className="flex-1"></div>;
   
   let color = "text-slate-400";
-  let height = "h-24"; // Taller bars
+  let height = "h-20 md:h-24"; // Slightly shorter on mobile
   let glow = "";
   let badgeColor = "bg-slate-700 text-slate-300";
 
   if (rank === 1) {
       color = "text-yellow-400";
-      height = "h-32";
+      height = "h-28 md:h-32";
       glow = "shadow-[0_0_20px_rgba(250,204,21,0.4)] ring-2 ring-yellow-500";
       badgeColor = "bg-yellow-500 text-black";
   } else if (rank === 2) {
-      color = "text-slate-300"; // Silver
-      height = "h-28";
+      color = "text-slate-300";
+      height = "h-24 md:h-28";
       badgeColor = "bg-slate-300 text-slate-900";
   } else if (rank === 3) {
-      color = "text-amber-600"; // Bronze
-      height = "h-24";
+      color = "text-amber-600";
+      height = "h-20 md:h-24";
       badgeColor = "bg-amber-700 text-amber-100";
   }
 
-  // Safe Name Handling
   const displayName = user.name ? user.name.split(' ')[0] : 'Unknown';
 
   return (
       <div className={`flex flex-col items-center justify-end ${rank === 1 ? '-mt-4 z-10' : ''}`}>
-          <div className="flex flex-col items-center mb-3">
-             <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center font-black text-sm mb-2 relative ${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'} ${color} ${glow}`}>
+          <div className="flex flex-col items-center mb-2 md:mb-3">
+             <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full border-2 flex items-center justify-center font-black text-xs md:text-sm mb-2 relative ${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'} ${color} ${glow}`}>
                 {displayName.charAt(0)}
-                <div className={`absolute -bottom-2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${badgeColor}`}>
+                <div className={`absolute -bottom-2 px-1.5 py-0.5 rounded-full text-[8px] font-black uppercase ${badgeColor}`}>
                     #{rank}
                 </div>
              </div>
-             <p className={`text-[10px] font-bold truncate max-w-[80px] ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}>{displayName}</p>
-             <p className="text-[9px] font-mono text-cyan-500 font-bold">{user.total_xp} XP</p>
+             <p className={`text-[9px] md:text-[10px] font-bold truncate max-w-[60px] md:max-w-[80px] ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}>{displayName}</p>
+             <p className="text-[8px] md:text-[9px] font-mono text-cyan-500 font-bold">{user.total_xp} XP</p>
           </div>
-          {/* Podium Box */}
           <div className={`w-full rounded-t-xl flex items-start justify-center pt-2 ${isDarkMode ? 'bg-slate-800/80' : 'bg-slate-100/80'} ${height}`}>
-              <div className={`font-black text-2xl opacity-30 ${color}`}>{rank}</div>
+              <div className={`font-black text-xl md:text-2xl opacity-30 ${color}`}>{rank}</div>
           </div>
       </div>
   );
@@ -83,23 +81,23 @@ export default function Leaderboard({ isDarkMode }) {
   };
 
   return (
-    <div className={`w-full p-6 rounded-[2rem] ${theme.container}`}>
+    <div className={`w-full p-5 md:p-6 rounded-[2rem] ${theme.container}`}>
       
       {/* HEADER */}
       <div className="flex items-center justify-between mb-6">
         <div>
             <h3 className={`text-[10px] font-black uppercase tracking-[0.2em] text-cyan-500 mb-1`}>Top Operatives</h3>
-            <h2 className={`text-xl font-black ${theme.text}`}>Global Rankings</h2>
+            <h2 className={`text-lg md:text-xl font-black ${theme.text}`}>Global Rankings</h2>
         </div>
         <Crown className="text-yellow-500 fill-yellow-500/20" size={24} />
       </div>
 
-      {/* TABS (Rounded Pills) */}
+      {/* TABS */}
       <div className="grid grid-cols-3 gap-1 p-1 rounded-full bg-slate-500/10 mb-8">
         {[['overall', 'All'], ['student', 'Cadets'], ['professional', 'Pros']].map(([id, label]) => (
           <button
             key={id} onClick={() => setCategory(id)}
-            className={`w-full py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all
+            className={`w-full py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-wider transition-all
             ${category === id ? 'bg-cyan-500 text-slate-900 shadow-md' : 'text-slate-500 hover:text-cyan-500 hover:bg-slate-500/5'}`}
           >
             {label}
@@ -109,7 +107,7 @@ export default function Leaderboard({ isDarkMode }) {
 
       {/* --- PODIUM SECTION (TOP 3) --- */}
       {!loading && leaders.length > 0 ? (
-          <div className="flex items-end justify-center gap-3 mb-8 px-2 pb-6 border-b border-dashed border-slate-700/30">
+          <div className="flex items-end justify-center gap-2 md:gap-3 mb-8 px-2 pb-6 border-b border-dashed border-slate-700/30">
               <div className="flex-1 order-1"><PodiumUser user={leaders[1]} rank={2} isDarkMode={isDarkMode} /></div>
               <div className="flex-1 order-2"><PodiumUser user={leaders[0]} rank={1} isDarkMode={isDarkMode} /></div>
               <div className="flex-1 order-3"><PodiumUser user={leaders[2]} rank={3} isDarkMode={isDarkMode} /></div>
@@ -144,7 +142,7 @@ export default function Leaderboard({ isDarkMode }) {
                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold bg-slate-800 text-slate-400 group-hover:bg-cyan-500/20 group-hover:text-cyan-400 transition-colors`}>
                                 {(leader.name || '?').charAt(0)}
                             </div>
-                            <p className={`text-xs font-bold ${theme.text}`}>{leader.name || 'Unknown Agent'}</p>
+                            <p className={`text-xs font-bold truncate max-w-[100px] md:max-w-none ${theme.text}`}>{leader.name || 'Unknown Agent'}</p>
                         </div>
                     </div>
                     <span className="text-[10px] font-bold text-slate-500 group-hover:text-cyan-500 transition-colors font-mono">{leader.total_xp} XP</span>

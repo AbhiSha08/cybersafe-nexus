@@ -39,59 +39,58 @@ export default function Footer({ isDarkMode }) {
   };
 
   return (
-    // Reduced padding from py-10 to py-6 for a slimmer footer
+    // FIX: Optimized padding for 18:9 screens (Compact Footer)
     <footer className={`mt-auto border-t py-6 transition-colors duration-300 backdrop-blur-sm ${theme.bg} ${theme.border}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* COMPACT GRID: Reduced gap from gap-8 to gap-6 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+        {/* RESPONSIVE GRID: Stacks on mobile, 3-columns on Desktop */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 items-center">
           
           {/* 1. BRAND SECTION */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
+          <div className="space-y-2 text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start gap-2">
               <ShieldCheck className={theme.accent} size={20} />
               <span className={`text-lg font-bold tracking-tight ${theme.heading}`}>
                 CyberSafe Nexus
               </span>
             </div>
-            <p className={`text-xs leading-relaxed max-w-xs ${theme.text}`}>
+            <p className={`text-xs leading-relaxed max-w-xs mx-auto md:mx-0 ${theme.text}`}>
               Interactive cybersecurity learning & simulation platform.
             </p>
           </div>
 
-          {/* 2. DEVELOPER INFO SECTION (Centered & Compact) */}
-          <div className="md:text-center flex flex-col items-center">
+          {/* 2. DEVELOPER INFO (Centered) */}
+          <div className="flex flex-col items-center text-center">
             <div className={`text-xs space-y-1 ${theme.text}`}>
               <p>Developed by <span className="font-bold text-cyan-500">Abhijeet Sharma</span></p>
               <p className="opacity-80">Full-Stack Architect & CyberSecurity Analyst</p>
               
-              <div className="flex justify-center gap-4 mt-2">
+              <div className="flex justify-center gap-4 mt-3">
                 <a href="https://github.com/abhijeetsharma" target="_blank" rel="noopener noreferrer" className={`transition-colors ${theme.text} hover:${theme.accent}`}>
-                  <Github size={16} />
+                  <Github size={18} />
                 </a>
                 <a href="https://linkedin.com/in/abhijeetsharma" target="_blank" rel="noopener noreferrer" className={`transition-colors ${theme.text} hover:${theme.accent}`}>
-                  <Linkedin size={16} />
+                  <Linkedin size={18} />
                 </a>
                 <a href="mailto:abhijeet.sharma@example.com" className={`transition-colors ${theme.text} hover:${theme.accent}`}>
-                  <Mail size={16} />
+                  <Mail size={18} />
                 </a>
               </div>
             </div>
           </div>
 
-          {/* 3. SHARE & TECH STACK SECTION (Right Aligned) */}
-          <div className="md:text-right flex flex-col items-end gap-2">
-            
+          {/* 3. SHARE & TECH (Right Aligned on Desktop, Centered on Mobile) */}
+          <div className="flex flex-col items-center md:items-end gap-3">
             <button
               onClick={handleShare}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium ${theme.border} ${theme.text} hover:${theme.accent} hover:border-cyan-500/50 transition-all group`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg border text-xs font-medium ${theme.border} ${theme.text} hover:${theme.accent} hover:border-cyan-500/50 transition-all group`}
             >
               {copied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
               <span>{copied ? 'Link Copied' : 'Share Platform'}</span>
             </button>
 
             {/* Tech Stack Icons */}
-            <div className="flex items-center gap-3 mt-1 opacity-70 hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-3 opacity-70 hover:opacity-100 transition-opacity">
               <Code2 size={16} className="text-cyan-400" title="React" />
               <Zap size={16} className="text-yellow-400" title="FastAPI" />
               <Database size={16} className="text-green-500" title="MongoDB" />
@@ -99,8 +98,8 @@ export default function Footer({ isDarkMode }) {
           </div>
         </div>
 
-        {/* BOTTOM BAR (Very compact now) */}
-        <div className={`mt-6 pt-4 border-t ${theme.border} flex flex-col sm:flex-row justify-between items-center gap-2`}>
+        {/* BOTTOM BAR */}
+        <div className={`mt-8 pt-4 border-t ${theme.border} flex flex-col sm:flex-row justify-between items-center gap-2 text-center sm:text-left`}>
           <p className={`text-[10px] uppercase tracking-wider ${theme.text}`}>
             &copy; {currentYear} CyberSafe Nexus. Mumbai University.
           </p>

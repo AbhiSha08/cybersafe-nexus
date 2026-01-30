@@ -50,21 +50,22 @@ const Register = ({ isDarkMode }) => {
   const inputClass = `w-full p-4 rounded-2xl border transition-all duration-300 outline-none text-sm font-medium ${isDarkMode ? 'bg-slate-950 border-slate-800 text-white focus:border-cyan-500' : 'bg-white border-slate-200 text-slate-900 focus:border-blue-600'}`;
 
   return (
-    <div className={`min-h-screen py-20 px-4 transition-colors duration-500 flex items-center justify-center ${isDarkMode ? 'bg-slate-950' : 'bg-slate-50'}`}>
+    // FIX: min-h-[100dvh] and responsive padding
+    <div className={`min-h-[100dvh] py-10 md:py-20 px-4 transition-colors duration-500 flex items-center justify-center ${isDarkMode ? 'bg-slate-950' : 'bg-slate-50'}`}>
       
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`w-full max-w-3xl mx-auto p-12 rounded-[3.5rem] border relative overflow-hidden ${isDarkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200 shadow-2xl'}`}>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`w-full max-w-3xl mx-auto p-6 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] border relative overflow-hidden ${isDarkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200 shadow-2xl'}`}>
         
-        {/* --- BACK BUTTON (INSIDE CARD) --- */}
+        {/* --- BACK BUTTON --- */}
         <button 
             onClick={() => navigate('/login')} 
-            className="absolute top-8 left-8 p-2 rounded-full hover:bg-slate-500/10 text-slate-500 transition-all group"
+            className="absolute top-6 left-6 md:top-8 md:left-8 p-2 rounded-full hover:bg-slate-500/10 text-slate-500 transition-all group"
             title="Back to Login"
         >
             <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
         </button>
 
-        <div className="text-center mb-12 mt-4">
-          <h2 className={`text-5xl font-black tracking-tighter uppercase ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Create Identity</h2>
+        <div className="text-center mb-10 md:mb-12 mt-8 md:mt-4">
+          <h2 className={`text-3xl md:text-5xl font-black tracking-tighter uppercase ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Create Identity</h2>
           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mt-3">Recruit Registration Protocol</p>
         </div>
 
@@ -74,7 +75,7 @@ const Register = ({ isDarkMode }) => {
             </motion.div>
         )}
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 relative z-10">
           <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="md:col-span-2">
             <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-2 block">Full Name</label>
             <input type="text" name="name" required className={inputClass} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="Abhijeet Sharma" />
@@ -110,6 +111,7 @@ const Register = ({ isDarkMode }) => {
             </div>
           </motion.div>
 
+          {/* FIX: Stacked grid for mobile inputs */}
           <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-slate-800/30">
             <div>
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 block">Institution</label>
@@ -130,7 +132,7 @@ const Register = ({ isDarkMode }) => {
             </div>
           </div>
 
-          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} type="submit" disabled={loading} className="md:col-span-2 mt-6 w-full py-5 bg-gradient-to-r from-cyan-600 to-blue-700 text-white font-black text-xs tracking-[0.3em] rounded-2xl shadow-2xl transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} type="submit" disabled={loading} className="md:col-span-2 mt-4 md:mt-6 w-full py-5 bg-gradient-to-r from-cyan-600 to-blue-700 text-white font-black text-xs tracking-[0.3em] rounded-2xl shadow-2xl transition-all disabled:opacity-50 flex items-center justify-center gap-2">
             {loading ? <Loader className="animate-spin" size={16} /> : 'INITIALIZE NEXUS ACCESS'}
           </motion.button>
         </form>

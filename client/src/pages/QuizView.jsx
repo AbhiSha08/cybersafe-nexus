@@ -8,19 +8,11 @@ import confetti from 'canvas-confetti';
 // --- HELPER: Fixes "SHOUTING" Text ---
 const formatText = (text) => {
   if (!text) return "";
-  
-  // 1. Check if text is mostly uppercase (The "Shouting" detection)
   const upperCaseCount = text.replace(/[^A-Z]/g, "").length;
   const totalLength = text.length;
-  
-  // If more than 50% is uppercase, fix it.
   if (upperCaseCount > totalLength / 2) {
-      // Convert to sentence case: "WHAT IS SQL?" -> "What is SQL?"
-      // We try to preserve acronyms if possible, but standard lowercase is safer for readability.
       return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
   }
-  
-  // Otherwise, return as is (trusting the AI did it right)
   return text;
 };
 
@@ -152,13 +144,14 @@ export default function QuizView({ isDarkMode }) {
   if (showResult) {
     const passed = score >= questions.length * 0.6; 
     return (
-        <div className={`min-h-screen flex items-center justify-center p-6 relative overflow-hidden ${theme.bg}`}>
-            <div className={`relative max-w-md w-full p-10 rounded-[2.5rem] border z-10 backdrop-blur-xl ${passed ? 'border-emerald-500/30 bg-emerald-950/30' : 'border-red-500/30 bg-red-950/30' } text-center shadow-2xl`}>
+        // FIX: Responsive flex container for result screen
+        <div className={`min-h-screen flex items-center justify-center p-4 md:p-6 relative overflow-hidden ${theme.bg}`}>
+            <div className={`relative max-w-md w-full p-8 md:p-10 rounded-[2.5rem] border z-10 backdrop-blur-xl ${passed ? 'border-emerald-500/30 bg-emerald-950/30' : 'border-red-500/30 bg-red-950/30' } text-center shadow-2xl`}>
                 <div className={`w-24 h-24 mx-auto rounded-3xl flex items-center justify-center mb-8 ${passed ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border border-red-500/20 text-red-400'}`}>
                     {passed ? <ShieldCheck size={48} /> : <ShieldAlert size={48} />}
                 </div>
                 
-                <h2 className={`text-3xl font-black uppercase tracking-tight mb-2 ${theme.text}`}>
+                <h2 className={`text-2xl md:text-3xl font-black uppercase tracking-tight mb-2 ${theme.text}`}>
                     {passed ? "Mission Accomplished" : "Mission Failed"}
                 </h2>
                 <div className="grid grid-cols-2 gap-4 mb-8 bg-slate-900/40 p-4 rounded-2xl border border-slate-800">
@@ -172,6 +165,7 @@ export default function QuizView({ isDarkMode }) {
                     </div>
                 </div>
 
+                {/* FIX: Vertical stack buttons on mobile */}
                 <div className="space-y-3">
                     {passed && nextModuleId ? (
                         <button onClick={() => navigate(`/lesson/${nextModuleId}`)} className="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-black text-xs uppercase tracking-widest py-4 rounded-xl transition-all shadow-lg shadow-emerald-500/20">
@@ -199,12 +193,13 @@ export default function QuizView({ isDarkMode }) {
   const progress = ((currentQIndex) / questions.length) * 100;
 
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden ${theme.bg}`}>
+    // FIX: min-h-[100dvh] for mobile full height
+    <div className={`min-h-[100dvh] flex flex-col items-center justify-center p-4 md:p-6 relative overflow-hidden ${theme.bg}`}>
         
         {/* Abort Button */}
         <button 
             onClick={() => navigate(`/lesson/${lessonId}`)}
-            className="absolute top-6 left-6 p-3 rounded-full bg-slate-800/50 text-slate-400 hover:bg-red-500 hover:text-white transition-all z-50 group border border-slate-700 hover:border-red-500"
+            className="absolute top-4 left-4 md:top-6 md:left-6 p-3 rounded-full bg-slate-800/50 text-slate-400 hover:bg-red-500 hover:text-white transition-all z-50 group border border-slate-700 hover:border-red-500"
             title="Abort Simulation"
         >
             <X size={20} />
@@ -238,15 +233,14 @@ export default function QuizView({ isDarkMode }) {
                 key={currentQIndex}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`p-8 md:p-10 rounded-[2rem] border backdrop-blur-xl shadow-2xl ${theme.card}`}
+                className={`p-6 md:p-10 rounded-[2rem] border backdrop-blur-xl shadow-2xl ${theme.card}`}
             >
                 {/* Clean, Readable Question Text */}
-                {/* Added 'normal-case' class and formatText() helper to fix formatting */}
-                <h3 className={`text-xl md:text-2xl font-medium mb-10 leading-relaxed text-slate-100 normal-case`}>
+                <h3 className={`text-lg md:text-2xl font-medium mb-8 md:mb-10 leading-relaxed text-slate-100 normal-case`}>
                     {formatText(currentQ.question)}
                 </h3>
 
-                <div className="grid gap-4">
+                <div className="grid gap-3 md:gap-4">
                     {currentQ.options.map((opt, i) => {
                         let borderClass = isDarkMode ? "border-slate-800 hover:border-cyan-500/50 hover:bg-slate-800/50" : "border-slate-200 hover:border-cyan-500";
                         let textClass = theme.sub;
@@ -287,7 +281,6 @@ export default function QuizView({ isDarkMode }) {
                                     {["A", "B", "C", "D"][i]}
                                 </div>
                                 
-                                {/* Format options text too */}
                                 <span className={`flex-grow text-sm font-medium normal-case ${textClass}`}>
                                     {formatText(opt)}
                                 </span>

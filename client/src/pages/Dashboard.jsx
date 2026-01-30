@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import api from '../api';
 import { useUIContext } from '../contexts/UIContext';
-import Leaderboard from '../components/Leaderboard';
+import Leaderboard from '../components/UIcomponents/Leaderboard'; // Ensure correct path
 
 export default function Dashboard({ isDarkMode }) {
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ export default function Dashboard({ isDarkMode }) {
     fetchDashboardData();
   }, [isLoggedIn]);
 
-  // SORT LESSONS: Ensure they appear in order (mod_1 -> mod_8)
+  // SORT LESSONS
   const sortedLessons = useMemo(() => {
     return lessons.sort((a, b) => {
         const numA = parseInt(a.id.split('_')[1] || 999);
@@ -75,43 +75,42 @@ export default function Dashboard({ isDarkMode }) {
   );
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${theme.bg}`}>
+    // FIX: Using min-h-[100dvh] for mobile full height
+    <div className={`min-h-[100dvh] transition-colors duration-500 ${theme.bg}`}>
       
-      <div className="mx-auto max-w-7xl p-6 space-y-8 pt-8">
+      <div className="mx-auto max-w-7xl p-4 md:p-6 space-y-8 pt-8">
         
         {/* HEADER */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div>
-            <h1 className={`text-3xl font-black uppercase tracking-wide ${theme.text}`}>
+            <h1 className={`text-2xl md:text-3xl font-black uppercase tracking-wide ${theme.text}`}>
               {isLoggedIn ? `Welcome, ${dashboardStats?.name || 'Operative'}` : 'CyberSafe Nexus'}
             </h1>
-            <p className={`text-sm font-medium ${theme.subText} mt-1`}>
+            <p className={`text-xs md:text-sm font-medium ${theme.subText} mt-1`}>
               Complete the modules in order to advance your clearance level.
             </p>
           </div>
           {isLoggedIn && dashboardStats?.role === 'admin' && (
-            <Link to="/admin" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/50 text-red-500 text-xs font-bold uppercase tracking-wider hover:bg-red-500/20 transition-colors">
+            <Link to="/admin" className="self-start lg:self-auto flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/50 text-red-500 text-xs font-bold uppercase tracking-wider hover:bg-red-500/20 transition-colors">
               <ShieldAlert size={14} /> Root Access
             </Link>
           )}
         </div>
 
-        {/* MAIN LAYOUT GRID */}
+        {/* MAIN LAYOUT GRID (Stack on mobile, 12-col on Desktop) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            {/* MODULES (Right -> Now Left, 9 cols) */}
+            {/* MODULES (9 cols) */}
             <div className="lg:col-span-9 space-y-6 order-2 lg:order-1">
                 
-                {/* 4-COLUMN GRID FOR MODULES */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    
+                {/* 1-Col Mobile, 2-Col Tablet, 4-Col Desktop */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {sortedLessons.map((l, index) => (
                         <button 
                             key={l.id} 
                             onClick={(e) => isLoggedIn ? navigate(`/lesson/${l.id}`) : handleRestrictedAction(e)}
                             className={`relative overflow-hidden flex flex-col justify-between p-5 rounded-2xl border text-left group transition-all h-48 ${theme.card}`}
                         >
-                            {/* Simple Background Number */}
                             <span className={`absolute -bottom-6 -right-2 text-8xl font-black opacity-5 group-hover:opacity-10 transition-opacity ${isDarkMode ? 'text-white' : 'text-black'}`}>
                                 {index + 1}
                             </span>
@@ -142,7 +141,7 @@ export default function Dashboard({ isDarkMode }) {
                 </div>
             </div>
 
-            {/* LEADERBOARD (Left -> Now Right, 3 cols) */}
+            {/* LEADERBOARD (3 cols) */}
             <div className="lg:col-span-3 space-y-6 order-1 lg:order-2">
                 <Leaderboard isDarkMode={isDarkMode} />
             </div>

@@ -23,7 +23,6 @@ export default function ForgotPassword({ isDarkMode }) {
       console.error("Forgot Password Error:", err);
       const detail = err.response?.data?.detail;
       
-      // Handle "Email not found" specifically if needed, or generic error
       if (detail === "Email not found" || err.response?.status === 404) {
           setError("Identity not found. Please register first.");
       } else if (typeof detail === 'string') {
@@ -45,24 +44,25 @@ export default function ForgotPassword({ isDarkMode }) {
   };
 
   return (
-    <div className={`flex items-center justify-center min-h-screen transition-colors duration-500 font-sans ${theme.bg}`}>
+    // FIX: min-h-[100dvh] + px-4 for mobile edges
+    <div className={`flex items-center justify-center min-h-[100dvh] px-4 py-8 transition-colors duration-500 font-sans ${theme.bg}`}>
       
       {/* Background Ambience */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className={`absolute top-0 right-1/4 w-96 h-96 rounded-full blur-[100px] opacity-10 ${isDarkMode ? 'bg-purple-600' : 'bg-purple-400'}`}></div>
-          <div className={`absolute bottom-0 left-1/4 w-96 h-96 rounded-full blur-[100px] opacity-10 ${isDarkMode ? 'bg-cyan-600' : 'bg-cyan-400'}`}></div>
+          <div className={`absolute top-0 right-1/4 w-64 md:w-96 h-64 md:h-96 rounded-full blur-[100px] opacity-10 ${isDarkMode ? 'bg-purple-600' : 'bg-purple-400'}`}></div>
+          <div className={`absolute bottom-0 left-1/4 w-64 md:w-96 h-64 md:h-96 rounded-full blur-[100px] opacity-10 ${isDarkMode ? 'bg-cyan-600' : 'bg-cyan-400'}`}></div>
       </div>
 
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }} 
         animate={{ opacity: 1, scale: 1 }} 
-        className={`relative overflow-hidden p-10 rounded-[2.5rem] w-full max-w-md border backdrop-blur-xl ${theme.card}`}
+        className={`relative overflow-hidden p-8 md:p-10 rounded-[2.5rem] w-full max-w-md border backdrop-blur-xl ${theme.card}`}
       >
         
         {/* --- BACK BUTTON (INSIDE CARD) --- */}
         <button 
             onClick={() => navigate('/login')} 
-            className="absolute top-8 left-8 p-2 rounded-full hover:bg-slate-500/10 text-slate-500 transition-all group"
+            className="absolute top-6 left-6 md:top-8 md:left-8 p-2 rounded-full hover:bg-slate-500/10 text-slate-500 transition-all group"
             title="Return to Login"
         >
             <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
@@ -75,7 +75,7 @@ export default function ForgotPassword({ isDarkMode }) {
             className="absolute left-0 right-0 h-[1px] bg-cyan-500/20 blur-sm z-20 pointer-events-none" 
         />
 
-        <div className="text-center mb-10 mt-6 relative z-10">
+        <div className="text-center mb-8 md:mb-10 mt-6 relative z-10">
           <motion.div 
             initial={{ rotate: -10 }}
             animate={{ rotate: 0 }}
@@ -83,7 +83,7 @@ export default function ForgotPassword({ isDarkMode }) {
           >
             <ShieldQuestion className={`w-8 h-8 ${theme.accent}`} />
           </motion.div>
-          <h1 className={`text-3xl font-black tracking-tighter ${theme.text}`}>Recovery Protocol</h1>
+          <h1 className={`text-2xl md:text-3xl font-black tracking-tighter ${theme.text}`}>Recovery Protocol</h1>
           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 mt-2">Identify yourself, Operative.</p>
         </div>
 
@@ -153,7 +153,7 @@ export default function ForgotPassword({ isDarkMode }) {
           )}
         </AnimatePresence>
 
-        <div className="mt-10 pt-8 border-t border-slate-800/10 dark:border-slate-800/50 text-[10px] font-black text-center uppercase tracking-widest text-slate-500">
+        <div className="mt-8 md:mt-10 pt-6 md:pt-8 border-t border-slate-800/10 dark:border-slate-800/50 text-[10px] font-black text-center uppercase tracking-widest text-slate-500">
           Remember your key? <Link to="/login" className="text-cyan-500 hover:underline">Access Terminal</Link>
         </div>
       </motion.div>

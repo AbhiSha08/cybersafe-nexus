@@ -6,17 +6,26 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import NexusLogo from './NexusLogo';
-// Import the detection hook (Adjust path if needed based on where you placed useMobile.js)
-import { useMobile } from '../../useMobile'; 
 
 export default function Navbar({ isDarkMode, toggleTheme }) {
   const navigate = useNavigate();
   const location = useLocation();
   const searchRef = useRef(null);
   
-  // Adaptive Layout Hooks
-  const isMobile = useMobile();
+  // --- MOBILE DETECTION LOGIC (INTEGRATED) ---
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Close menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   // Search State
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,7 +40,7 @@ export default function Navbar({ isDarkMode, toggleTheme }) {
   const isLoggedIn = !!localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-  // Navigation Config - Centralized for both Desktop and Mobile
+  // Navigation Config
   const navLinks = [
     { path: '/', label: 'Home', icon: Home },
     { path: '/dashboard', label: 'Dashboard', icon: BarChart3 },
@@ -54,11 +63,6 @@ export default function Navbar({ isDarkMode, toggleTheme }) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  // Close mobile menu when route changes
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location.pathname]);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -210,8 +214,9 @@ export default function Navbar({ isDarkMode, toggleTheme }) {
               </div>
             )}
 
-            {/* CONTROLS (Desktop Profile / Mobile Toggle) */}
-            <div className="flex items-center gap-3 shrink-0 border-l border-slate-800/20 pl-4">
+            {/* CONTROLS */}
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0 border-l border-slate-800/20 pl-4">
+              {/* Profile (Desktop) */}
               {!isMobile && isLoggedIn && (
                 <div onClick={() => navigate('/profile')} className="flex flex-col items-end cursor-pointer group">
                   <span className={`text-sm font-black uppercase tracking-tight group-hover:text-cyan-500 transition-colors ${isDarkMode ? 'text-slate-100' : 'text-gray-900'}`}>
@@ -226,7 +231,7 @@ export default function Navbar({ isDarkMode, toggleTheme }) {
                 {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
               </button>
 
-              {/* Mobile Hamburger Trigger */}
+              {/* HAMBURGER TRIGGER (Mobile Only) */}
               {isMobile && (
                 <button 
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
@@ -245,17 +250,15 @@ export default function Navbar({ isDarkMode, toggleTheme }) {
         </div>
       </nav>
 
-      {/* --- MOBILE DRAWER (GLASSMORPHISM) --- */}
+      {/* --- MOBILE DRAWER --- */}
       <AnimatePresence>
         {isMobile && isMobileMenuOpen && (
           <>
-            {/* Backdrop */}
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setIsMobileMenuOpen(false)}
               className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
             />
-            {/* Drawer */}
             <motion.div
               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
@@ -266,7 +269,7 @@ export default function Navbar({ isDarkMode, toggleTheme }) {
                    <NexusLogo className="w-8 h-8" />
                    <span className={`text-xl font-black tracking-tighter ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>NEXUS</span>
                 </div>
-                {/* Mobile User Profile Info */}
+                {/* Mobile Profile */}
                 {isLoggedIn && (
                    <div onClick={() => navigate('/profile')} className="p-4 rounded-2xl bg-slate-500/5 border border-slate-500/10 flex items-center gap-3 mb-2">
                       <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-500 font-bold">

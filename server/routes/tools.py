@@ -14,13 +14,12 @@ from urllib.parse import urlparse
 from dateutil import parser 
 from bson import ObjectId 
 
-# FIX: Router prefix matches main.py inclusion ("/api" + "/tools")
-router = APIRouter(prefix="/tools")
+# FIX: Remove the internal prefix. Let main.py handle the "/api/tools" part.
+router = APIRouter() 
 
 # --- AI CONFIG ---
 if settings.GEMINI_API_KEY:
     genai.configure(api_key=settings.GEMINI_API_KEY)
-    # KEPT: Using your specified Gemini 2.5 Flash model
     model = genai.GenerativeModel("gemini-1.5-flash") 
 else:
     model = None
@@ -46,23 +45,15 @@ async def get_live_alerts():
 # --- AI CHAT ---
 @router.post("/ai-assistant")
 async def chat_with_ai(msg_data: ChatMessage, user=Depends(get_current_user_optional)):
-    """
-    Enhanced AI Assistant with User Context awareness.
-    """
     if not model: 
         return {"response": "System: AI Offline (Missing API Key)."}
-    
     try:
-        # Personalize response based on auth status
         user_name = user.get("name", "Operative") if user else "Guest"
-        
         system_instruction = (
             f"You are NEXUS, an advanced cybersecurity AI tutor. "
             f"User: {user_name}. "
-            f"Keep answers concise, technical yet accessible, and strictly about cybersecurity/programming. "
-            f"If asked about illegal hacking, refuse and remind them of the Ethical Directive."
+            f"Keep answers concise, technical yet accessible."
         )
-        
         response = model.generate_content(f"{system_instruction}\nUser Query: {msg_data.message}")
         return {"response": response.text}
     except Exception as e: 
@@ -129,10 +120,6 @@ async def analyze_target_url(data: dict, user=Depends(get_current_user)):
                 checks.append({"name": "Domain History", "status": "PASS", "owasp": "A05: Config", "detail": f"Established ({days} days old)"})
         else:
             checks.append({"name": "Domain History", "status": "WARN", "owasp": "A05: Config", "detail": "Could not verify age (Privacy Redacted)"})
-        
-        if "redacted" in str(w).lower() or "privacy" in str(w).lower():
-            risk_score += 15
-            checks.append({"name": "Ownership", "status": "WARN", "owasp": "A05: Config", "detail": "Owner Identity Hidden"})
             
     except Exception as e:
         print(f"Whois Error: {e}")
@@ -153,11 +140,7 @@ async def analyze_target_url(data: dict, user=Depends(get_current_user)):
 # --- LOGGING & SCORING ---
 @router.post("/log-simulation")
 async def log_security_event(data: SimulationLog, user_payload=Depends(get_current_user)):
-    """
-    Logs security events. 
-    Now correctly captures 'cadet_name' from the updated Token Payload.
-    """
-    user_id = user_payload['user_id'] # Extracted for update query
+    user_id = user_payload['user_id']
     
     event_doc = {
         "user_id": user_id,
@@ -169,7 +152,6 @@ async def log_security_event(data: SimulationLog, user_payload=Depends(get_curre
         "node": "Nexus-Terminal"
     }
     
-    # FIX: Was 'doc', updated to 'event_doc'
     await db.security_logs.insert_one(event_doc)
 
     points = 0

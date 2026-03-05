@@ -4,7 +4,7 @@ import axios from 'axios';
  * Use environment variable for backend URL
  * Falls back to production URL for deployed builds
  */
-const BASE_URL = process.env.REACT_APP_BACKEND_URL || 'https://cybersafe-nexus.onrender.com'; 
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || 'https://cybersafe-nexus.onrender.com/api'; 
 
 const api = axios.create({
   baseURL: BASE_URL,

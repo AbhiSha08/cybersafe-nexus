@@ -18,7 +18,7 @@ export default function CyberTools({ isDarkMode }) {
   useEffect(() => {
     const fetchAlerts = async () => {
       try {
-        const res = await api.get(`/tools/live-alerts?v=${Date.now()}`);
+        const res = await api.get(`/api/tools/live-alerts?v=${Date.now()}`);
         if (res.data && res.data.length > 0) {
           setAlerts([
               "Authorized research protocols apply. Unauthorized use strictly prohibited.",

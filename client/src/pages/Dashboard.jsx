@@ -19,11 +19,11 @@ export default function Dashboard({ isDarkMode }) {
 
   const fetchDashboardData = async () => {
     try {
-      const lessonsRes = await api.get('/lessons');
+      const lessonsRes = await api.get('/api/lessons');
       setLessons(lessonsRes.data);
 
       if (isLoggedIn) {
-        const profileRes = await api.get('/users/me');
+        const profileRes = await api.get('/api/users/me');
         const data = profileRes.data.user; 
         setDashboardStats({
           ...data,

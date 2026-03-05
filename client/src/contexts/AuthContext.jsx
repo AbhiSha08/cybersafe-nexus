@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
     const fetchProfile = async () => {
         try {
             // FIXED: Added '/api' prefix and standard endpoint
-            const res = await api.get('/users/me');
+            const res = await api.get('/api/users/me');
             setUser(res.data);
         } catch (err) {
             console.error("Profile fetch failed:", err);
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
         formData.append('username', username);
         formData.append('password', password);
 
-        const res = await api.post('/auth/login', formData, {
+        const res = await api.post('/api/auth/login', formData, {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         });
 
@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (userData) => {
         // FIXED: Added '/api' prefix
-        const res = await api.post('/auth/register', userData);
+        const res = await api.post('/api/auth/register', userData);
         
         // If registration returns a token immediately (depends on backend logic)
         if (res.data.access_token) {

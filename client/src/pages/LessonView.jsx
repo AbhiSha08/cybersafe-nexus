@@ -28,10 +28,10 @@ export default function LessonView({ isDarkMode }) {
         setLoading(true);
         setIsQuizLocked(false); 
 
-        const res = await api.get(`/lessons/${id}`);
+        const res = await api.get(`/api/lessons/${id}`);
         setLesson(res.data);
         
-        const allRes = await api.get('/lessons');
+        const allRes = await api.get('/api/lessons');
         const sorted = allRes.data.sort((a, b) => {
              const numA = parseInt(a.id.split('_')[1] || 999);
              const numB = parseInt(b.id.split('_')[1] || 999);
@@ -43,7 +43,7 @@ export default function LessonView({ isDarkMode }) {
         
         if (currentIndex > 0) {
             const prevLesson = sorted[currentIndex - 1];
-            const userRes = await api.get('/users/me');
+            const userRes = await api.get('/api/users/me');
             
             const rawCompleted = userRes.data.completed_lessons || [];
             const completedIDs = rawCompleted.map(item => {

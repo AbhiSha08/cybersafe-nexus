@@ -12,7 +12,7 @@ export default function SecurityLogs({ isDarkMode }) {
   const fetchLogs = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/tools/security-logs');
+      const res = await api.get('/api/tools/security-logs');
       setLogs(res.data);
     } catch (err) {
       console.error("SIEM Extraction Failure");

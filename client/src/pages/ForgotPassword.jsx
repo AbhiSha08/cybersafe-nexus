@@ -19,7 +19,7 @@ export default function ForgotPassword({ isDarkMode }) {
     setError('');
 
     try {
-      await api.post('/auth/forgot-password', { email });
+      await api.post('/api/auth/forgot-password', { email });
       setSuccess(true);
       setStep(2); // Show token input step
       

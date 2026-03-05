@@ -29,7 +29,7 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
 
   const fetchProfile = async () => {
     try {
-      const res = await api.get('/api/users/me');
+      const res = await api.get('users/me');
       setProfile(res.data);
       
       // Initialize Form Data
@@ -90,7 +90,7 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
       return;
     }
     try {
-      await api.put('/api/users/update', formData);
+      await api.put('users/update', formData);
       setIsEditing(false);
       fetchProfile();
       alert("✅ Profile Updated Successfully");

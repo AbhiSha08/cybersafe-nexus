@@ -20,7 +20,7 @@ export default function Login({ isDarkMode, setIsAuthenticated }) {
 
     try {
       const payload = { email: email, password: password };
-      const res = await api.post('/api/auth/login', payload);
+      const res = await api.post('auth/login', payload);
 
       if (res.data.access_token) {
         localStorage.setItem('token', res.data.access_token);
@@ -50,7 +50,7 @@ export default function Login({ isDarkMode, setIsAuthenticated }) {
     setLoading(true);
 
     try {
-      const res = await api.post('/api/auth/google-auth', {
+      const res = await api.post('auth/google-auth', {
         token: credentialResponse.credential
       });
 

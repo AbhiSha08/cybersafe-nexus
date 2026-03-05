@@ -36,7 +36,7 @@ export default function QuizView({ isDarkMode }) {
       try {
         setLoading(true);
         // 1. Fetch Next Module ID
-        const allRes = await api.get('/api/lessons');
+        const allRes = await api.get('lessons');
         const sorted = allRes.data.sort((a, b) => {
              const numA = parseInt(a.id.split('_')[1] || 999);
              const numB = parseInt(b.id.split('_')[1] || 999);
@@ -48,7 +48,7 @@ export default function QuizView({ isDarkMode }) {
         }
 
         // 2. Generate Quiz
-        const res = await api.post(`/api/lessons/${lessonId}/generate-quiz`);
+        const res = await api.post(`lessons/${lessonId}/generate-quiz`);
         
         if (res.data && res.data.length > 0) {
             setQuestions(res.data);
@@ -93,7 +93,7 @@ export default function QuizView({ isDarkMode }) {
 
   const submitResults = async (finalScore) => {
     try {
-        await api.post('/api/lessons/submit-quiz', {
+        await api.post('lessons/submit-quiz', {
             quiz_id: lessonId,
             answers: [] 
         });

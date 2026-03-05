@@ -20,7 +20,7 @@ export const PhishingSimulator = ({ isDarkMode }) => {
     setShowTechDetails(false);
 
     try {
-      const response = await api.post('/api/tools/analyze-url', { url: url });
+      const response = await api.post('tools/analyze-url', { url: url });
       const result = response.data; 
       const safetyScore = Math.max(0, 100 - result.risk_score);
 
@@ -32,7 +32,7 @@ export const PhishingSimulator = ({ isDarkMode }) => {
       });
 
       try {
-        await api.post('/api/tools/log-simulation', {
+        await api.post('tools/log-simulation', {
           tool_name: "Phishing Analyzer",
           input_data: result.target || url,
           risk_level: result.verdict === "SAFE" ? "Low" : "Critical",
@@ -277,7 +277,7 @@ export const PasswordAuditor = ({ isDarkMode }) => {
     const handleLog = async () => {
       if (entropy < 10 || pwd === lastLogged.current) return;
       try {
-        await api.post('/api/tools/log-simulation', {
+        await api.post('tools/log-simulation', {
           tool_name: "Password Auditor",
           input_data: "[REDACTED_NODE]",
           risk_level: entropy < 40 ? "Medium" : "Low",

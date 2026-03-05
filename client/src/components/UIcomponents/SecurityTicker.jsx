@@ -18,7 +18,7 @@ export default function SecurityTicker({ isDarkMode }) {
   useEffect(() => {
     const fetchLiveIntel = async () => {
       try {
-        const res = await api.get('/api/lessons/leaderboard/top?limit=1');
+        const res = await api.get('lessons/leaderboard/top?limit=1');
         const topCadet = res.data[0];
         
         // Create a special Gold Item for the Leader

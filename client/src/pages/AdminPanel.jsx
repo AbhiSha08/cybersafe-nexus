@@ -19,9 +19,9 @@ export default function AdminPanel({ isDarkMode }) {
   const fetchAdminData = async () => {
     try {
       const [userRes, intelRes, healthRes] = await Promise.all([
-        api.get('/api/admin/all-users'),
-        api.get('/api/admin/intel/global-analytics'),
-        api.get('/api/admin/system/health')
+        api.get('admin/all-users'),
+        api.get('admin/intel/global-analytics'),
+        api.get('admin/system/health')
       ]);
       setUsers(userRes.data);
       setIntel(intelRes.data);
@@ -37,8 +37,8 @@ export default function AdminPanel({ isDarkMode }) {
     fetchAdminData();
     const interval = setInterval(() => {
         // Poll health and intel every 30s
-        api.get('/api/admin/system/health').then(res => setHealth(res.data));
-        api.get('/api/admin/intel/global-analytics').then(res => setIntel(res.data));
+        api.get('admin/system/health').then(res => setHealth(res.data));
+        api.get('admin/intel/global-analytics').then(res => setIntel(res.data));
     }, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -46,7 +46,7 @@ export default function AdminPanel({ isDarkMode }) {
   const pushGlobalAlert = async () => {
     if (!tickerMsg) return;
     try {
-      await api.post('/api/admin/push-alert', { message: tickerMsg });
+      await api.post('admin/push-alert', { message: tickerMsg });
       alert("Nexus Broadcast Executed Successfully.");
       setTickerMsg('');
     } catch (err) { alert("Broadcast Link Failed."); }
@@ -59,7 +59,7 @@ export default function AdminPanel({ isDarkMode }) {
     if (confirm2 !== 'PURGE') return;
 
     try {
-      await api.post('/api/admin/system/reset');
+      await api.post('admin/system/reset');
       alert("System has been returned to factory defaults.");
       window.location.reload();
     } catch (err) { alert("Reset Protocol Aborted."); }

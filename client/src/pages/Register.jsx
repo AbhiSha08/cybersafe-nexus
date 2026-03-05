@@ -36,7 +36,7 @@ const Register = ({ isDarkMode }) => {
     }
     setLoading(true);
     try {
-      const response = await api.post('/api/auth/register', formData);
+      const response = await api.post('auth/register', formData);
       localStorage.setItem('token', response.data.access_token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       navigate('/dashboard');
@@ -53,7 +53,7 @@ const Register = ({ isDarkMode }) => {
     setLoading(true);
 
     try {
-      const res = await api.post('/api/auth/google-auth', {
+      const res = await api.post('auth/google-auth', {
         token: credentialResponse.credential
       });
 

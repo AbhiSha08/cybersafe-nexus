@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider } from './contexts/AuthContext';
 import { UIProvider, useUIContext } from './contexts/UIContext';
 
@@ -75,32 +76,33 @@ function App() {
   }, [isDarkMode]);
 
   return (
-    <AuthProvider>
-      <UIProvider>
-        <Router>
-          <PageTracker>
-            
-            {/* --- GLOBAL BACKGROUND LAYER --- */}
-            {/* Updated to min-h-[100dvh] for full mobile coverage */}
-            <div className={`fixed inset-0 z-[-1] transition-colors duration-500 ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
-              <div className={`absolute inset-0 cyber-grid ${!isDarkMode ? 'light-mode' : ''}`}>
-                 {/* MULTIPLE LIGHTS */}
-                 <div className="grid-light light-1"></div>
-                 <div className="grid-light light-2"></div>
-                 <div className="grid-light light-3"></div>
-                 <div className="grid-light light-4"></div>
-              </div>
-              <div className={`absolute inset-0 ${isDarkMode ? 'bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.05)_0%,transparent_70%)]' : 'bg-[radial-gradient(circle_at_center,rgba(13,148,136,0.05)_0%,transparent_70%)]'}`}></div>
-            </div>
-
-            {/* MAIN LAYOUT CONTAINER */}
-            {/* FIX: min-h-[100dvh] ensures footer sticks to bottom on tall mobile screens */}
-            <div className="relative z-10 flex flex-col min-h-[100dvh]">
-              <Navbar isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
-              <SecurityTicker isDarkMode={isDarkMode} />
+    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
+      <AuthProvider>
+        <UIProvider>
+          <Router>
+            <PageTracker>
               
-              <div className="flex-grow">
-                <Routes>
+              {/* --- GLOBAL BACKGROUND LAYER --- */}
+              {/* Updated to min-h-[100dvh] for full mobile coverage */}
+              <div className={`fixed inset-0 z-[-1] transition-colors duration-500 ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
+                <div className={`absolute inset-0 cyber-grid ${!isDarkMode ? 'light-mode' : ''}`}>
+                   {/* MULTIPLE LIGHTS */}
+                   <div className="grid-light light-1"></div>
+                   <div className="grid-light light-2"></div>
+                   <div className="grid-light light-3"></div>
+                   <div className="grid-light light-4"></div>
+                </div>
+                <div className={`absolute inset-0 ${isDarkMode ? 'bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.05)_0%,transparent_70%)]' : 'bg-[radial-gradient(circle_at_center,rgba(13,148,136,0.05)_0%,transparent_70%)]'}`}></div>
+              </div>
+
+              {/* MAIN LAYOUT CONTAINER */}
+              {/* FIX: min-h-[100dvh] ensures footer sticks to bottom on tall mobile screens */}
+              <div className="relative z-10 flex flex-col min-h-[100dvh]">
+                <Navbar isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+                <SecurityTicker isDarkMode={isDarkMode} />
+                
+                <div className="flex-grow">
+                  <Routes>
                   <Route path="/" element={<Home isDarkMode={isDarkMode} />} />
                   <Route path="/news" element={<News isDarkMode={isDarkMode} />} />
                   <Route path="/updates" element={<Updates isDarkMode={isDarkMode} />} />
@@ -157,6 +159,7 @@ function App() {
         </Router>
       </UIProvider>
     </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }
 

@@ -41,7 +41,7 @@ export default function AiAssistant({ isDarkMode }) {
 
     try {
       const currentContext = getContextFromPath(location.pathname);
-      const response = await api.post('/api/tools/ai-assistant', {
+      const response = await api.post('/tools/ai-assistant', {
         message: currentInput,
         context: `Current User Location: ${currentContext}. Please provide helpful cybersecurity insights.`
       });

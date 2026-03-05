@@ -6,7 +6,8 @@ from core.security import (
     create_token, 
     check_brute_force, 
     log_failed_attempt,
-    TOKEN_BLACKLIST
+    TOKEN_BLACKLIST,
+    verify_google_token
 )
 from core.database import db
 from models.schemas import UserCreate, UserLogin, ForgotPasswordRequest, ResetPasswordSubmit
@@ -14,8 +15,15 @@ import uuid
 import jwt
 from datetime import datetime, timezone, timedelta
 from core.config import settings
+from pydantic import BaseModel
 
 router = APIRouter()
+
+# --- GOOGLE AUTH MODELS ---
+class GoogleTokenRequest(BaseModel):
+    token: str
+    name: str = None
+    email: str = None
 
 # --- 1. REGISTRATION ---
 @router.post("/register", status_code=status.HTTP_201_CREATED)
@@ -89,6 +97,96 @@ async def login(user_data: UserLogin, request: Request = None):
             "role": user["role"]
         }
     }
+
+# --- 3. GOOGLE SIGN-UP/SIGN-IN ---
+@router.post("/google-auth")
+async def google_auth(google_request: GoogleTokenRequest, request: Request = None):
+    """
+    Handle Google OAuth sign-up/sign-in.
+    If user exists, logs them in. If not, creates new account.
+    """
+    ip = request.client.host if request else "unknown"
+    check_brute_force(ip)
+    
+    try:
+        # Verify Google token
+        idinfo = verify_google_token(google_request.token)
+        
+        email = idinfo.get('email')
+        google_name = idinfo.get('name', 'Google User')
+        google_picture = idinfo.get('picture')
+        
+        if not email:
+            raise HTTPException(status_code=400, detail="Google token missing email")
+        
+        # Check if user exists
+        user = await db.users.find_one({'email': email})
+        
+        if user:
+            # User exists - login
+            token = create_token(user['id'], user['email'], user['role'], user.get('name', 'Cadet'))
+            await db.users.update_one(
+                {"id": user['id']},
+                {"$set": {"last_login": datetime.now(timezone.utc).isoformat()}}
+            )
+            return {
+                "access_token": token,
+                "token_type": "bearer",
+                "user": {
+                    "name": user["name"],
+                    "email": user["email"],
+                    "role": user["role"]
+                },
+                "is_new": False
+            }
+        else:
+            # New user - auto-register from Google
+            user_id = str(uuid.uuid4())
+            
+            user_doc = {
+                'id': user_id,
+                'email': email,
+                'password': None,  # No password for Google auth users
+                'auth_method': 'google',  # Track auth method
+                'google_id': idinfo.get('sub'),
+                'previous_passwords': [],
+                'name': google_name,
+                'role': 'user',
+                'user_type': 'individual',
+                'organization': '',
+                'experience_years': 0,
+                'age_range': '',
+                'gender': '',
+                'tech_familiarity': 'beginner',
+                'streak_count': 1,
+                'total_xp': 0,
+                'certificates': [],
+                'completed_lessons': [],
+                'daily_streak': 1,
+                'last_login': datetime.now(timezone.utc).isoformat(),
+                'profile_picture': google_picture,
+                'created_at': datetime.now(timezone.utc).isoformat()
+            }
+            
+            await db.users.insert_one(user_doc)
+            token = create_token(user_id, email, 'user', google_name)
+            
+            return {
+                "access_token": token,
+                "token_type": "bearer",
+                "user": {
+                    "name": google_name,
+                    "email": email,
+                    "role": 'user'
+                },
+                "is_new": True
+            }
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        log_failed_attempt(ip)
+        raise HTTPException(status_code=400, detail=f"Google auth failed: {str(e)}")
 
 # --- 3. PASSWORD RESET (REAL-TIME SIMULATION) ---
 @router.post("/forgot-password")

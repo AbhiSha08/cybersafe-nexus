@@ -38,7 +38,7 @@ export default function ResetPassword({ isDarkMode }) {
     setError('');
     
     try {
-      await api.post('/api/auth/reset-password', { token, new_password: newPassword });
+      await api.post('/auth/reset-password', { token, new_password: newPassword });
       setSuccess(true);
       setTimeout(() => navigate('/login'), 3000);
     } catch (err) { 

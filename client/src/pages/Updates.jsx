@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  GitCommit, Calendar, CheckCircle, Server, Code, 
+  GitCommit, Calendar, CheckCircle, Server, 
   FileText, ShieldCheck, User, Globe, 
   ArrowUp, X, LayoutGrid, KeyRound 
 } from 'lucide-react';

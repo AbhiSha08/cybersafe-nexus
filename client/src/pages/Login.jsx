@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Shield, Lock, Loader, AlertTriangle, ArrowLeft } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
 import api from '../api';
 
 export default function Login({ isDarkMode, setIsAuthenticated }) {
@@ -19,7 +20,7 @@ export default function Login({ isDarkMode, setIsAuthenticated }) {
 
     try {
       const payload = { email: email, password: password };
-      const res = await api.post('/api/auth/login', payload);
+      const res = await api.post('/auth/login', payload);
 
       if (res.data.access_token) {
         localStorage.setItem('token', res.data.access_token);
@@ -39,6 +40,37 @@ export default function Login({ isDarkMode, setIsAuthenticated }) {
       if (typeof detail === 'string') setError(detail);
       else if (Array.isArray(detail)) setError(detail[0].msg || "Validation Error");
       else setError("Connection failed.");
+    } finally { 
+      setLoading(false); 
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setError('');
+    setLoading(true);
+
+    try {
+      const res = await api.post('/auth/google-auth', {
+        token: credentialResponse.credential
+      });
+
+      if (res.data.access_token) {
+        localStorage.setItem('token', res.data.access_token);
+        if (res.data.user) {
+            localStorage.setItem('user', JSON.stringify(res.data.user));
+        }
+        if (setIsAuthenticated) {
+            setIsAuthenticated(true);
+        }
+        navigate('/dashboard');
+      } else {
+        throw new Error("Invalid response");
+      }
+    } catch (err) { 
+      console.error("Google Login Error:", err);
+      const detail = err.response?.data?.detail;
+      if (typeof detail === 'string') setError(detail);
+      else setError("Google authentication failed.");
     } finally { 
       setLoading(false); 
     }
@@ -66,7 +98,7 @@ export default function Login({ isDarkMode, setIsAuthenticated }) {
         initial={{ opacity: 0, scale: 0.95 }} 
         animate={{ opacity: 1, scale: 1 }} 
         // FIX: Responsive padding (p-8 on mobile, p-12 desktop) and max-width safety
-        className={`relative overflow-hidden p-8 md:p-12 rounded-[2.5rem] md:rounded-[3rem] w-full max-w-md border backdrop-blur-xl ${themeClasses.card}`}
+        className={`relative overflow-hidden p-6 md:p-8 rounded-[2.5rem] md:rounded-[3rem] w-full max-w-md min-w-[28rem] border backdrop-blur-xl ${themeClasses.card}`}
       >
         
         {/* --- BACK BUTTON (INSIDE CARD) --- */}
@@ -85,7 +117,7 @@ export default function Login({ isDarkMode, setIsAuthenticated }) {
             className="absolute left-0 right-0 h-[2px] bg-cyan-500/20 blur-sm z-20 pointer-events-none" 
         />
 
-        <div className="text-center mb-8 md:mb-10 relative z-10 pt-4">
+        <div className="text-center mb-4 md:mb-6 relative z-10 pt-4">
           <motion.div 
             whileHover={{ rotate: 180 }} 
             transition={{ duration: 0.6 }} 
@@ -102,13 +134,13 @@ export default function Login({ isDarkMode, setIsAuthenticated }) {
             <motion.div 
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-3 bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-bold text-center rounded-xl flex items-center justify-center gap-2"
+                className="mb-4 p-2 bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-bold text-center rounded-xl flex items-center justify-center gap-2"
             >
-                <AlertTriangle size={14} /> {error}
+                <AlertTriangle size={12} /> {error}
             </motion.div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-5 md:space-y-6 relative z-10">
+        <form onSubmit={handleLogin} className="space-y-4 md:space-y-5 relative z-10">
           <div>
             <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2 ml-1">Email ID</label>
             <input 
@@ -156,7 +188,30 @@ export default function Login({ isDarkMode, setIsAuthenticated }) {
           </motion.button>
         </form>
 
-        <div className="mt-8 md:mt-10 pt-6 md:pt-8 border-t border-slate-800/50 text-[10px] font-black text-center uppercase tracking-widest text-slate-500">
+        {/* Google Sign-In */}
+        <div className="mt-4 md:mt-6 relative z-10">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex-1 h-px bg-slate-700/50"></div>
+            <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Or</span>
+            <div className="flex-1 h-px bg-slate-700/50"></div>
+          </div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="flex justify-center"
+          >
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError("Google login failed. Please try again.")}
+              theme={isDarkMode ? "dark" : "light"}
+              size="large"
+            />
+          </motion.div>
+        </div>
+
+        <div className="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-slate-800/50 text-[10px] font-black text-center uppercase tracking-widest text-slate-500">
           New recruit? <Link to="/register" className="text-cyan-500 hover:underline">Initialize Identity</Link>
         </div>
       </motion.div>

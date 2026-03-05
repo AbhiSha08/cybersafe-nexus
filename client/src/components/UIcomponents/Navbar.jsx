@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   Sun, Moon, LogOut, 
   Terminal, Newspaper, Settings, Home, BarChart3, Search, Globe, ExternalLink, History, X

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   User, Mail, Shield, Award, Zap, 
-  LogOut, Lock, KeyRound, Loader, Crown, Edit2, Camera, Save, X, FileText, Clock, AlertTriangle, Upload
+  LogOut, Lock, KeyRound, Loader, Crown, Edit2, Camera, Save, X, FileText, Clock, AlertTriangle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../api';
@@ -22,7 +22,6 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
 
   // --- MODAL STATE ---
   const [activeModal, setActiveModal] = useState(null); 
-  const [selectedCert, setSelectedCert] = useState(null);
 
   useEffect(() => {
     fetchProfile();
@@ -30,7 +29,7 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
 
   const fetchProfile = async () => {
     try {
-      const res = await api.get('/api/users/me');
+      const res = await api.get('/users/me');
       setProfile(res.data);
       
       // Initialize Form Data
@@ -91,7 +90,7 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
       return;
     }
     try {
-      await api.put('/api/users/update', formData);
+      await api.put('/users/update', formData);
       setIsEditing(false);
       fetchProfile();
       alert("✅ Profile Updated Successfully");
@@ -109,7 +108,6 @@ export default function Profile({ isDarkMode, setIsAuthenticated }) {
 
   const closeModal = () => {
     setActiveModal(null);
-    setSelectedCert(null);
   };
 
   const theme = {

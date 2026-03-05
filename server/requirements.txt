@@ -1,16 +1,19 @@
     fastapi
-    uvicorn
-    motor
-    pymongo
-    python-jose[cryptography]
-    passlib[bcrypt]
-    python-multipart
-    google-generativeai>=0.3.2
-    python-whois
-    dnspython
-    requests
-    pydantic[email]
-    pydantic-settings
-    python-dotenv
-    psutil
-    PyJWT
+uvicorn
+motor
+pymongo
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+google-generativeai>=0.3.2
+google-auth>=2.0.0
+google-auth-httplib2
+google-auth-oauthlib
+python-whois
+dnspython
+requests
+pydantic[email]
+pydantic-settings
+python-dotenv
+psutil
+PyJWT

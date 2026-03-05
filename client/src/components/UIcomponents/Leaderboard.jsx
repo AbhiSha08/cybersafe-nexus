@@ -57,7 +57,7 @@ export default function Leaderboard({ isDarkMode }) {
     const fetchLeaders = async () => {
       setLoading(true);
       try {
-        const res = await api.get(`/api/lessons/leaderboard/top?category=${category}`);
+        const res = await api.get(`/lessons/leaderboard/top?category=${category}`);
         if (Array.isArray(res.data)) {
             setLeaders(res.data);
         } else {

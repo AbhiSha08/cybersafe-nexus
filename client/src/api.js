@@ -1,10 +1,10 @@
 import axios from 'axios';
 
 /**
- * Hard-coded URL for Mumbai University Project Deployment
- * This ensures the frontend connects to the cloud backend directly.
+ * Use environment variable for backend URL
+ * Falls back to production URL for deployed builds
  */
-const BASE_URL = 'https://cybersafe-nexus.onrender.com'; 
+const BASE_URL = process.env.REACT_APP_BACKEND_URL || 'https://cybersafe-nexus.onrender.com'; 
 
 const api = axios.create({
   baseURL: BASE_URL,

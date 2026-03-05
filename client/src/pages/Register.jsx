@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, ArrowLeft, Loader, AlertTriangle } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
 import api from '../api';
 
 const Register = ({ isDarkMode }) => {
@@ -35,13 +36,41 @@ const Register = ({ isDarkMode }) => {
     }
     setLoading(true);
     try {
-      const response = await api.post('/api/auth/register', formData);
+      const response = await api.post('/auth/register', formData);
       localStorage.setItem('token', response.data.access_token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       navigate('/dashboard');
     } catch (err) { 
         const detail = err.response?.data?.detail;
         setError(typeof detail === 'string' ? detail : "Registration failed.");
+    } finally { 
+        setLoading(false); 
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setError('');
+    setLoading(true);
+
+    try {
+      const res = await api.post('/auth/google-auth', {
+        token: credentialResponse.credential
+      });
+
+      if (res.data.access_token) {
+        localStorage.setItem('token', res.data.access_token);
+        if (res.data.user) {
+            localStorage.setItem('user', JSON.stringify(res.data.user));
+        }
+        navigate('/dashboard');
+      } else {
+        throw new Error("Invalid response");
+      }
+    } catch (err) { 
+      console.error("Google Register Error:", err);
+      const detail = err.response?.data?.detail;
+      if (typeof detail === 'string') setError(detail);
+      else setError("Google authentication failed.");
     } finally { 
         setLoading(false); 
     }
@@ -106,8 +135,33 @@ const Register = ({ isDarkMode }) => {
                 </button>
             </div>
             
-            <div className="flex gap-1.5 mt-3 px-1">
-              {Object.entries(passwordCriteria).map(([k, met]) => <div key={k} className={`h-1 flex-1 rounded-full transition-all duration-700 ${met ? 'bg-cyan-500 shadow-lg shadow-cyan-500/50' : 'bg-slate-800'}`} />)}
+            {/* Password Strength Indicator with Labels */}
+            <div className="mt-3 space-y-2">
+              <div className="flex gap-1.5">
+                {Object.entries(passwordCriteria).map(([k, met]) => <div key={k} className={`h-1 flex-1 rounded-full transition-all duration-700 ${met ? 'bg-cyan-500 shadow-lg shadow-cyan-500/50' : 'bg-slate-800'}`} />)}
+              </div>
+              <div className="text-[8px] font-black uppercase tracking-widest text-slate-500 space-y-1">
+                <div className={`flex items-center gap-2 ${passwordCriteria.length ? 'text-cyan-400' : 'text-slate-600'}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${passwordCriteria.length ? 'bg-cyan-400' : 'bg-slate-700'}`}></span>
+                  Min 8 characters
+                </div>
+                <div className={`flex items-center gap-2 ${passwordCriteria.upper ? 'text-cyan-400' : 'text-slate-600'}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${passwordCriteria.upper ? 'bg-cyan-400' : 'bg-slate-700'}`}></span>
+                  Uppercase letter (A-Z)
+                </div>
+                <div className={`flex items-center gap-2 ${passwordCriteria.lower ? 'text-cyan-400' : 'text-slate-600'}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${passwordCriteria.lower ? 'bg-cyan-400' : 'bg-slate-700'}`}></span>
+                  Lowercase letter (a-z)
+                </div>
+                <div className={`flex items-center gap-2 ${passwordCriteria.number ? 'text-cyan-400' : 'text-slate-600'}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${passwordCriteria.number ? 'bg-cyan-400' : 'bg-slate-700'}`}></span>
+                  Number (0-9)
+                </div>
+                <div className={`flex items-center gap-2 ${passwordCriteria.special ? 'text-cyan-400' : 'text-slate-600'}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${passwordCriteria.special ? 'bg-cyan-400' : 'bg-slate-700'}`}></span>
+                  Special char (!@#$%^&*)
+                </div>
+              </div>
             </div>
           </motion.div>
 
@@ -135,6 +189,34 @@ const Register = ({ isDarkMode }) => {
           <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} type="submit" disabled={loading} className="md:col-span-2 mt-4 md:mt-6 w-full py-5 bg-gradient-to-r from-cyan-600 to-blue-700 text-white font-black text-xs tracking-[0.3em] rounded-2xl shadow-2xl transition-all disabled:opacity-50 flex items-center justify-center gap-2">
             {loading ? <Loader className="animate-spin" size={16} /> : 'INITIALIZE NEXUS ACCESS'}
           </motion.button>
+
+          {/* Google Sign-In */}
+          <div className="md:col-span-2 mt-6 md:mt-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex-1 h-px bg-slate-700/50"></div>
+              <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Or</span>
+              <div className="flex-1 h-px bg-slate-700/50"></div>
+            </div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="flex justify-center"
+            >
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => setError("Google sign-up failed. Please try again.")}
+                theme={isDarkMode ? "dark" : "light"}
+                size="large"
+                width="100%"
+              />
+            </motion.div>
+
+            <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 text-center mt-4">
+              Already have access? <Link to="/login" className="text-cyan-500 hover:underline">Authenticate</Link>
+            </p>
+          </div>
         </form>
       </motion.div>
     </div>

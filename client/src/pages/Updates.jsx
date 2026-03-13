@@ -11,96 +11,76 @@ const CHANGELOG = [
   {
     id: "v2.5",
     version: "v2.5.0",
-    date: "Jan 29, 2026",
-    title: "System Hardening & UX Overhaul",
-    icon: KeyRound,
-    desc: "Real-time security ops, enhanced profile management, and global intel integration.",
+    date: "March 1 - March 5, 2026",
+    title: "System Validation & Hardening",
+    icon: ShieldCheck,
+    desc: "Executed rigorous QA testing, Vulnerability Assessment and Penetration Testing (VAPT), and compiled final system documentation.",
     changes: [
-      "Deployed Real-Time Password Recovery (Console/Email Simulation).",
-      "Integrated Local Storage Profile Picture Upload (WhatsApp-style).",
-      "Refactored Navbar with Wikipedia-powered Global Intel Search.",
-      "Optimized Dashboard layout: 4-Column Grid & Sidebar Leaderboard.",
-      "Enhanced 'Forgot Password' flow with in-app token handling."
-    ]
-  },
-  {
-    id: "v2.4",
-    version: "v2.4.0",
-    date: "Jan 26, 2026",
-    title: "Identity & Profile Ops",
-    icon: User,
-    desc: "User profile management with secure editing.",
-    changes: [
-      "Deployed 'Operative Profile' page with Avatar support.",
-      "Implemented Secure Edit Mode: Password verification required.",
-      "Added 'Live Preview' for profile image URLs.",
-      "Visual overhaul of Stats & Credentials cards."
-    ]
-  },
-  {
-    id: "v2.3",
-    version: "v2.3.0",
-    date: "Jan 26, 2026",
-    title: "Tactical Dashboard 2.0",
-    icon: LayoutGrid,
-    desc: "New Topic Tracks & Compact Grid Layout.",
-    changes: [
-      "Replaced levels with 5 Tracks: Hygiene, Crypto, Malware, Web, Red Team.",
-      "Migrated to a 3-Column Grid for maximum density.",
-      "Redesigned Lesson Cards to be horizontal.",
-      "Implemented dynamic filtering for specialized topics."
-    ]
-  },
-  {
-    id: "v2.2",
-    version: "v2.2.0",
-    date: "Jan 25, 2026",
-    title: "Lesson Interface Refactor",
-    icon: FileText,
-    desc: "Compact headers and unified reading experience.",
-    changes: [
-      "Removed large headers for a slim metadata navbar.",
-      "Standardized UI blocks for Objectives and Key Concepts.",
-      "Reduced vertical padding to minimize scrolling."
-    ]
-  },
-  {
-    id: "v2.1",
-    version: "v2.1.0",
-    date: "Jan 25, 2026",
-    title: "Global Intel Search",
-    icon: Globe,
-    desc: "Integrated Wikipedia API for instant definitions.",
-    changes: [
-      "Replaced local AI search with Wikipedia API.",
-      "Added instant search dropdown in the Navbar.",
-      "Enabled 'Quick Brief' view for search results."
+      "Comprehensive QA testing across all system components",
+      "Vulnerability Assessment and Penetration Testing (VAPT) completed",
+      "Final system documentation and architecture review",
+      "Security hardening and performance optimization",
+      "API routing validation and COOP policy fixes"
     ]
   },
   {
     id: "v2.0",
     version: "v2.0.0",
-    date: "Jan 24, 2026",
-    title: "Nexus Security Update",
-    icon: ShieldCheck,
-    desc: "RBAC and Root Command Center.",
+    date: "Feb 20 - March 1, 2026",
+    title: "Tool Integration & AI Orchestration",
+    icon: Globe,
+    desc: "Deployed the heuristic phishing engine and integrated Google Gemini 2.5 Flash for real-time security tutoring.",
     changes: [
-      "Implemented Role-Based Access Control (Student/Admin).",
-      "Deployed Root Command Center for user management.",
-      "Integrated Live Intel Broadcasts ticker."
+      "Deployed heuristic phishing link analyzer",
+      "Integrated Google Gemini 2.5 Flash AI assistant",
+      "Real-time security tutoring and contextual learning",
+      "Advanced threat intelligence integration",
+      "AI-powered quiz generation and content analysis"
     ]
   },
   {
     id: "v1.5",
     version: "v1.5.0",
-    date: "Jan 23, 2026",
-    title: "Cloud Deployment",
-    icon: Server,
-    desc: "Production launch on Render & Vercel.",
+    date: "Feb 10 - Feb 20, 2026",
+    title: "Frontend & UI Engineering",
+    icon: LayoutGrid,
+    desc: "Built the React.js component library, implemented state management, and applied responsive design system using Tailwind CSS.",
     changes: [
-      "Backend deployed to Render (FastAPI).",
-      "Frontend hosted on Vercel.",
-      "Database migrated to MongoDB Atlas Cloud."
+      "Complete React.js component library development",
+      "Advanced state management with Context API",
+      "Responsive design system with Tailwind CSS",
+      "Mobile-first responsive layouts",
+      "Component-based architecture implementation"
+    ]
+  },
+  {
+    id: "v1.0",
+    version: "v1.0.0",
+    date: "Jan 25 - Feb 10, 2026",
+    title: "Core Backend Infrastructure",
+    icon: Server,
+    desc: "Deployed FastAPI server, implemented stateless JWT-based authentication, and established MongoDB Atlas connection.",
+    changes: [
+      "FastAPI server deployment and configuration",
+      "Stateless JWT-based authentication system",
+      "MongoDB Atlas cloud database integration",
+      "RESTful API architecture implementation",
+      "Security middleware and CORS configuration"
+    ]
+  },
+  {
+    id: "v0.1",
+    version: "v0.1.0-alpha",
+    date: "Jan 15 - Jan 25, 2026",
+    title: "Conceptualization & Architecture",
+    icon: FileText,
+    desc: "Finalized system requirements, architectural blueprinting, and NoSQL database schema modeling.",
+    changes: [
+      "System requirements finalization and analysis",
+      "Complete architectural blueprinting",
+      "NoSQL database schema modeling",
+      "Security framework design",
+      "Educational curriculum structure planning"
     ]
   }
 ];

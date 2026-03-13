@@ -125,10 +125,10 @@ export default function Dashboard({ isDarkMode }) {
                                      <BookOpen size={16}/>
                                     }
                                 </div>
-                                <span className={`text-[9px] font-black uppercase tracking-wider opacity-70 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                                <span className={`text-[9px] font-black uppercase tracking-wider opacity-70 ${isDarkMode ? 'text-slate-400' : 'text-slate-700'}`}>
                                     Module 0{index + 1}
                                 </span>
-                                <h3 className={`text-sm font-bold leading-tight ${theme.text} group-hover:text-cyan-400 transition-colors mt-1 line-clamp-2`}>
+                                <h3 className={`text-sm font-bold leading-tight ${theme.text} ${isDarkMode ? 'group-hover:text-cyan-400' : 'group-hover:text-cyan-600'} transition-colors mt-1 line-clamp-2`}>
                                     {l.title.replace(/Module \d+: /, "")}
                                 </h3>
                             </div>

@@ -98,7 +98,7 @@ export default function Login({ isDarkMode, setIsAuthenticated }) {
         initial={{ opacity: 0, scale: 0.95 }} 
         animate={{ opacity: 1, scale: 1 }} 
         // FIX: Responsive padding (p-8 on mobile, p-12 desktop) and max-width safety
-        className={`relative overflow-hidden p-6 md:p-8 rounded-[2.5rem] md:rounded-[3rem] w-full max-w-md min-w-[28rem] border backdrop-blur-xl ${themeClasses.card}`}
+        className={`relative overflow-hidden p-6 md:p-8 rounded-[2.5rem] md:rounded-[3rem] w-full max-w-md sm:min-w-[28rem] border backdrop-blur-xl ${themeClasses.card}`}
       >
         
         {/* --- BACK BUTTON (INSIDE CARD) --- */}

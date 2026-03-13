@@ -116,7 +116,7 @@ export default function Dashboard({ isDarkMode }) {
                             </span>
 
                             <div className="relative z-10">
-                                <div className={`w-8 h-8 mb-3 rounded-lg flex items-center justify-center bg-slate-500/10 text-slate-400`}>
+                                <div className={`w-8 h-8 mb-3 rounded-lg flex items-center justify-center ${isDarkMode ? 'bg-slate-500/10 text-slate-400' : 'bg-slate-100 text-slate-600'}`}>
                                     {index === 0 ? <Shield size={16}/> : 
                                      index === 1 ? <ShieldAlert size={16}/> :
                                      index === 2 ? <ShieldCheck size={16}/> :
@@ -125,10 +125,10 @@ export default function Dashboard({ isDarkMode }) {
                                      <BookOpen size={16}/>
                                     }
                                 </div>
-                                <span className={`text-[9px] font-black uppercase tracking-wider opacity-70 ${isDarkMode ? 'text-slate-400' : 'text-slate-700'}`}>
+                                <span className={`text-[9px] font-black uppercase tracking-wider opacity-70 ${isDarkMode ? 'text-slate-400' : 'text-slate-800'}`}>
                                     Module 0{index + 1}
                                 </span>
-                                <h3 className={`text-sm font-bold leading-tight ${theme.text} ${isDarkMode ? 'group-hover:text-cyan-400' : 'group-hover:text-cyan-600'} transition-colors mt-1 line-clamp-2`}>
+                                <h3 className={`text-sm font-bold leading-tight ${isDarkMode ? 'text-slate-100' : 'text-slate-900'} ${isDarkMode ? 'group-hover:text-cyan-400' : 'group-hover:text-cyan-600'} transition-colors mt-1 line-clamp-2`}>
                                     {l.title.replace(/Module \d+: /, "")}
                                 </h3>
                             </div>

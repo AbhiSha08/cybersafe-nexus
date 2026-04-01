@@ -1,7 +1,7 @@
 🛡️ CyberSafe Nexus: Unified Intelligence & Simulation Hub
 Final Year Research Project | B.Sc. Computer Science | Mumbai University (April 2026)
 
-CyberSafe Nexus is a high-performance, containerized cybersecurity platform designed to bridge the gap between academic theory and real-world SOC environments.
+CyberSafe Nexus is a high-performance, Docker-orchestrated platform designed to bridge the gap between academic theory and real-world SOC operations. It features a Tactical Simulation Terminal for hands-on auditing of Phishing, SQLi, and Brute-Force attacks, integrated with SIEM-style event logging and Google Gemini AI for real-time threat intelligence.
 
 ⚡ v2.1.0 SOC Intelligence Update
 Tactical Simulation Terminal: Hands-on labs for Phishing, SQLi, and Brute-Force auditing.
